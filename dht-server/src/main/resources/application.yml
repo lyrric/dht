@@ -1,0 +1,24 @@
+server:
+  port: 8766
+## netty服务器端口
+netty:
+  udp:
+    port: 6688
+  so:
+    rcvbuf: 268435456
+    sndbuf: 65536
+
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1ms
+
+logging:
+  level:
+    root: info
