@@ -15,6 +15,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
@@ -45,7 +46,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Resource
 	private DHTServer dhtServer;
 	@Resource
-	private RedisTemplate redisTemplate;
+	private StringRedisTemplate stringRedisTemplate;
 	@Resource
 	private MessageStreams messageStreams;
 
@@ -178,6 +179,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 		byte[] info_hash = (byte[]) a.get("info_hash");
 		byte[] token = (byte[]) a.get("token");
+		String hashStr = new BigInteger(1,info_hash).toString(16);
 		byte[] id = (byte[]) a.get("id");
 		if(token.length != 2 || info_hash[0] != token[0] || info_hash[1] != token[1])
 			return;
@@ -194,16 +196,20 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		DatagramPacket packet = createPacket(t, "r", r, sender);
 		dhtServer.sendKRPC(packet);
 		//check exists, if exists then add to bloom filter
-		if (redisTemplate.hasKey(info_hash)) {
-			dhtServer.bloomFilter.add(ByteUtil.byteArrayToHex(info_hash));
+		if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(hashStr))) {
+			dhtServer.bloomFilter.add(hashStr);
 			return;
+		}else{
+			//放入缓存，下次收到相同种子hash的请求，则不用再记录
+			stringRedisTemplate.opsForValue().set(hashStr, "");
 		}
+
 		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, ByteUtil.byteArrayToHex(info_hash));
-		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port,new BigInteger(1,info_hash).toString(16));
+		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
 		//send to kafka
 		messageStreams.downloadMessageOutput()
 				.send(MessageBuilder
-						.withPayload(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash))
+						.withPayload(new DownloadMsgInfo(sender.getHostString(), port, nodeId, hashStr))
 						.setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
 						.build());
 	}
