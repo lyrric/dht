@@ -1,0 +1,10 @@
+server:
+  port: 8762
+
+logging:
+  level:
+    root: info
+
+download:
+  num:
+    thread: 20

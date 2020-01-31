@@ -13,9 +13,9 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 import java.io.Serializable;
 
 @Getter @Setter @Builder @ToString
-@Document(indexName = "dodder", type = "torrent")
-@Mapping(mappingPath = "torrent_search_mapping.json")
-@Setting(settingPath = "elasticsearch_custom_comma_analyzer.json")
+//@Document(indexName = "dodder", type = "torrent")
+//@Mapping(mappingPath = "torrent_search_mapping.json")
+//@Setting(settingPath = "elasticsearch_custom_comma_analyzer.json")
 public class Torrent implements Serializable {
 
     @Id

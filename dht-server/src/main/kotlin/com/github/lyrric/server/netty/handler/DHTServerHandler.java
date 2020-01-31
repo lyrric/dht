@@ -1,11 +1,13 @@
 package com.github.lyrric.server.netty.handler;
 
+import com.github.lyrric.common.entity.DownloadMsgInfo;
 import com.github.lyrric.common.util.ByteUtil;
 import com.github.lyrric.common.util.NodeIdUtil;
 import com.github.lyrric.common.util.bencode.BencodingUtils;
 import com.github.lyrric.server.netty.DHTServer;
 import com.github.lyrric.server.model.Node;
 import com.github.lyrric.server.model.UniqueBlockingQueue;
+import com.github.lyrric.server.netty.stream.MessageStreams;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,7 +15,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MimeTypeUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -41,6 +46,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private DHTServer dhtServer;
 	@Resource
 	private RedisTemplate redisTemplate;
+	@Resource
+	private MessageStreams messageStreams;
 
 	private ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
@@ -192,12 +199,13 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			return;
 		}
 		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, ByteUtil.byteArrayToHex(info_hash));
+		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port,new BigInteger(1,info_hash).toString(16));
 		//send to kafka
-//		messageStreams.downloadMessageOutput()
-//				.send(MessageBuilder
-//						.withPayload(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash))
-//						.setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
-//						.build());
+		messageStreams.downloadMessageOutput()
+				.send(MessageBuilder
+						.withPayload(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash))
+						.setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+						.build());
 	}
 
 	/**
