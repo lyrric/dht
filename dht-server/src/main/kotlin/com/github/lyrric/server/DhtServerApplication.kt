@@ -9,5 +9,5 @@ import org.springframework.scheduling.annotation.EnableScheduling
 class DhtServerApplication
 
 fun main(args: Array<String>) {
-	runApplication<DhtServerApplication>(*args)
+    runApplication<DhtServerApplication>(*args)
 }

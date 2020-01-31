@@ -115,6 +115,13 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.github.lyrric.server.DhtServerApplication</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
 				<configuration>
@@ -133,29 +140,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<plugin>
-				<groupId>org.mybatis.generator</groupId>
-				<artifactId>mybatis-generator-maven-plugin</artifactId>
-				<configuration>
-					<configurationFile>src/main/resources/generatorConfig.xml</configurationFile>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>tk.mybatis</groupId>
-						<artifactId>mapper</artifactId>
-						<version>3.4.0</version>
-					</dependency>
-					<dependency>
-						<groupId>mysql</groupId>
-						<artifactId>mysql-connector-java</artifactId>
-						<version>8.0.11</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+
 		</plugins>
 	</build>
 </project>
