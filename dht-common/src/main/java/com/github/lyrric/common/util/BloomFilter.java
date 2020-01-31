@@ -216,27 +216,5 @@ public class BloomFilter implements Serializable {
 
     }
 
-    public static void main(String[] args) {
-        BloomFilter fileter = new BloomFilter(100000000);
-        fileter.add("1111111111111");
-        System.out.println(fileter.addIfNotExist("2222222222222222"));
-        System.out.println(fileter.addIfNotExist("3333333333333333"));
-        System.out.println(fileter.addIfNotExist("444444444444444"));
-        System.out.println(fileter.addIfNotExist("5555555555555"));
-        System.out.println(fileter.addIfNotExist("6666666666666"));
-        System.out.println(fileter.check("1111111111111"));
-        /*fileter.saveFilterToFile("C:\\Users\\john\\Desktop\\1111\\11.obj");
-        fileter = readFilterFromFile("C:\\Users\\john\\Desktop\\111\\11.obj");
-        System.out.println(fileter.getUseRate());
-        System.out.println(fileter.addIfNotExist("1111111111111"));*/
-        String path = System.getProperty("java.class.path");
-        System.out.println(path);
-        int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
-        int lastIndex = path.lastIndexOf(File.separator) + 1;
-        path = path.substring(firstIndex, lastIndex);
-        System.out.println(path);
 
-        System.out.println(ByteUtil.byteArrayToHex(NodeIdUtil.createRandomNodeId()));
-        System.out.println(NetworkUtil.getCurrentEnvironmentNetworkIp());
-    }
 }
