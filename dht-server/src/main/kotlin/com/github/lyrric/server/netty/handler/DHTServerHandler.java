@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /***
  * 参见 Bittorrent 协议：
@@ -49,6 +50,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private StringRedisTemplate stringRedisTemplate;
 	@Resource
 	private MessageStreams messageStreams;
+
+	private AtomicInteger connectNum = new AtomicInteger(0);
 
 	private ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
@@ -352,5 +355,17 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	public void stop() {
 		findNodeTask.interrupt();
 	}
+	@Override
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		super.channelRegistered(ctx);
+		connectNum.incrementAndGet();
+		log.info("channelRegistered，current connected：{}" ,connectNum.get());
+	}
 
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		super.channelUnregistered(ctx);
+		connectNum.decrementAndGet();
+		log.info("channelUnregistered，current connected: {}" , connectNum.get());
+	}
 }
