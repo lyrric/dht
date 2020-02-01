@@ -41,7 +41,7 @@ public class DownloadTask implements Runnable {
 				return;
 			}
 			RedisTemplate redisTemplate = SpringContextUtil.getBean(RedisTemplate.class);
-			redisTemplate.boundListOps(RedisConstant.KEY_TORRENT).rightPush(torrent);
+			redisTemplate.opsForList().rightPush(RedisConstant.KEY_TORRENT, torrent);
 //			log.info("[{}:{}] Download torrent success, info hash is {}",
 //					msgInfo.getIp(),
 //					msgInfo.getPort(),
