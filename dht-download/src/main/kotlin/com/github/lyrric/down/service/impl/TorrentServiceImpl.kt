@@ -39,7 +39,7 @@ class TorrentServiceImpl : TorrentService{
 
     @Synchronized
     fun sync(torrent: Torrent){
-        log.info("torrentMessageIn---------------{}, size: {}", torrent.infoHash, torrents.size)
+        log.info("torrentMessageIn111---------------{}, size: {}", torrent.infoHash, torrents.size)
         val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
         weekend.weekendCriteria()
                 .andEqualTo(Torrent::getInfoHash.name, torrent.infoHash)
