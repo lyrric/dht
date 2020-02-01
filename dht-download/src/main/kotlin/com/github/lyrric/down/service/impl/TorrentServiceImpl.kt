@@ -10,8 +10,8 @@ import org.springframework.cloud.stream.annotation.StreamListener
 import org.springframework.stereotype.Service
 import tk.mybatis.mapper.weekend.Weekend
 import java.util.*
-import java.util.concurrent.Semaphore
 import javax.annotation.Resource
+import kotlin.collections.ArrayList
 
 @Service
 class TorrentServiceImpl : TorrentService{
@@ -19,7 +19,7 @@ class TorrentServiceImpl : TorrentService{
     @Resource
     private lateinit var torrentMapper: TorrentMapper
 
-    private val torrents = LinkedList<Torrent>()
+    private val torrents = ArrayList<Torrent?>(50)
 
 
     private val log:Logger = LoggerFactory.getLogger(this.javaClass)
@@ -42,16 +42,16 @@ class TorrentServiceImpl : TorrentService{
         log.info("torrentMessageIn222---------------{}, size: {}", torrent.infoHash, torrents.size)
         val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
         weekend.weekendCriteria()
-                .andEqualTo(Torrent::getInfoHash.name, torrent.infoHash)
+                .andEqualTo(Torrent::infoHash.name, torrent.infoHash)
         if(torrentMapper.selectCountByExample(weekend) > 0){
             log.info(" torrentMapper exist in db")
             return
         }
-//        if(torrents.stream().anyMatch{t->t.infoHash == torrent.infoHash} ){
-//            //判断列表中是否有相同hash，几率小，但是还是要避免，否则批量插入会失败
-//            log.info(" torrentMapper exist in list")
-//            return
-//        }
+        if(torrents.stream().anyMatch{t->t?.infoHash == torrent.infoHash} ){
+            //判断列表中是否有相同hash，几率小，但是还是要避免，否则批量插入会失败
+            log.info(" torrentMapper exist in list")
+            return
+        }
         log.info(" torrents.addLast(torrent)")
         torrents.add(torrent)
         //每满50个添加进数据库
