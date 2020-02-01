@@ -47,20 +47,19 @@ class TorrentServiceImpl : TorrentService{
             log.info(" torrentMapper exist in db")
             return
         }
-        synchronized(this){
-            if(torrents.stream().anyMatch{t->t.infoHash == torrent.infoHash} ){
-                //判断列表中是否有相同hash，几率小，但是还是要避免，否则批量插入会失败
-                log.info(" torrentMapper exist in list")
-                return
-            }
-            log.info(" torrents.addLast(torrent)")
-            torrents.add(torrent)
-            //每满50个添加进数据库
-            if(torrents.size >= 50){
-                log.info(" torrentMapper.insertList(torrents)---------------")
-                torrentMapper.insertList(torrents)
-                torrents.clear()
-            }
+        if(torrents.stream().anyMatch{t->t.infoHash == torrent.infoHash} ){
+            //判断列表中是否有相同hash，几率小，但是还是要避免，否则批量插入会失败
+            log.info(" torrentMapper exist in list")
+            return
         }
+        log.info(" torrents.addLast(torrent)")
+        torrents.add(torrent)
+        //每满50个添加进数据库
+        if(torrents.size >= 50){
+            log.info(" torrentMapper.insertList(torrents)---------------")
+            torrentMapper.insertList(torrents)
+            torrents.clear()
+        }
+
     }
 }
