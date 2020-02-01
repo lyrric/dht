@@ -6,7 +6,7 @@ class RedisConstant {
         /**
          * 存储HASH的前缀
          */
-        const val KEY_HASH_PREFIX:String = "DHT:HASH_INFO："
+        const val KEY_HASH_PREFIX:String = "DHT:HASH_INFO:"
         /**
          * 存储种子hash的key，分布式队列下载种子信息
          */

@@ -178,37 +178,39 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 * @param sender
 	 */
 	private void responseAnnouncePeer(byte[] t, Map a, InetSocketAddress sender) {
+		try {
+			byte[] info_hash = (byte[]) a.get("info_hash");
+			byte[] token = (byte[]) a.get("token");
+			String hashStr = new BigInteger(1,info_hash).toString(16);
+			byte[] id = (byte[]) a.get("id");
+			if(token.length != 2 || info_hash[0] != token[0] || info_hash[1] != token[1])
+				return;
+			int port;
+			if (a.containsKey("implied_port") && ((BigInteger) a.get("implied_port")).shortValue() != 0) {
+				port = sender.getPort();
+			} else {
+				port = ((BigInteger) a.get("port")).intValue();
+			}
 
-		byte[] info_hash = (byte[]) a.get("info_hash");
-		byte[] token = (byte[]) a.get("token");
-		String hashStr = new BigInteger(1,info_hash).toString(16);
-		byte[] id = (byte[]) a.get("id");
-		if(token.length != 2 || info_hash[0] != token[0] || info_hash[1] != token[1])
-			return;
-		int port;
-		if (a.containsKey("implied_port") && ((BigInteger) a.get("implied_port")).shortValue() != 0) {
-			port = sender.getPort();
-		} else {
-			port = ((BigInteger) a.get("port")).intValue();
+			HashMap<String, Object> r = new HashMap<>();
+			byte[] nodeId = NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, id);
+			r.put("id", nodeId);
+			DatagramPacket packet = createPacket(t, "r", r, sender);
+			dhtServer.sendKRPC(packet);
+			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
+			//check exists, if exists then add to bloom filter
+			if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
+				//dhtServer.bloomFilter.add(hashStr);
+				return;
+			}else{
+				//放入缓存，下次收到相同种子hash的请求，则不用再记录
+				stringRedisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
+				redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).rightPush(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
+			}
+
+		}catch (Exception e){
+			e.printStackTrace();
 		}
-
-		HashMap<String, Object> r = new HashMap<>();
-		byte[] nodeId = NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, id);
-		r.put("id", nodeId);
-		DatagramPacket packet = createPacket(t, "r", r, sender);
-		dhtServer.sendKRPC(packet);
-		//check exists, if exists then add to bloom filter
-		if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
-			//dhtServer.bloomFilter.add(hashStr);
-			return;
-		}else{
-			//放入缓存，下次收到相同种子hash的请求，则不用再记录
-			stringRedisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
-		}
-		//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
-		//send to redis
-		redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).rightPush(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
-
 
 	}
 
