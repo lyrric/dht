@@ -149,6 +149,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 */
 	private void responseGetPeers(byte[] t, byte[] info_hash, InetSocketAddress sender) {
 		//check bloom filter, if exists then don't reply it
+		if(info_hash == null){
+			return;
+		}
 		if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16)))) {
 			//dhtServer.bloomFilter.add(hashStr);
 			return;
