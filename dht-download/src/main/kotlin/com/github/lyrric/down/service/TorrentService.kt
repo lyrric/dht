@@ -10,7 +10,6 @@ import com.github.lyrric.down.task.DownloadTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.redis.core.BoundListOperations
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -31,7 +30,7 @@ class TorrentService {
     @Value("\${download.num.thread}")
     private var nThreads:Int = 40
 
-    @Resource
+    @Resource(name = "dhtRedisTemplate")
     private lateinit var dhtRedisTemplate: RedisTemplate<String, Any?>
 
     private var blockingExecutor:BlockingExecutor? = null

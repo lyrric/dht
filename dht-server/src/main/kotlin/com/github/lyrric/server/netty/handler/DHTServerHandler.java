@@ -43,7 +43,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 	@Resource
 	private DHTServer dhtServer;
-	@Resource
+	@Resource(name = "dhtRedisTemplate")
 	private RedisTemplate<String, Object> redisTemplate;
 
 	private AtomicInteger connectNum = new AtomicInteger(0);

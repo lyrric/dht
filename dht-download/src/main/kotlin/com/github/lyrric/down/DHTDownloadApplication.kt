@@ -27,7 +27,7 @@ class DHTDownloadApplication {
     @Autowired
     private lateinit var redisConnectionFactory: RedisConnectionFactory
 
-    @Bean
+    @Bean(name = ["dhtRedisTemplate"])
     fun dhtRedisTemplate(): RedisTemplate<String, Any>? {
         val redisTemplate = RedisTemplate<String, Any>()
         initDomainRedisTemplate(redisTemplate, redisConnectionFactory)
