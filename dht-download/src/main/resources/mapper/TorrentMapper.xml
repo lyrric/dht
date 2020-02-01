@@ -8,7 +8,6 @@
     <result column="info_hash" jdbcType="VARCHAR" property="infoHash" />
     <result column="file_name" jdbcType="VARCHAR" property="fileName" />
     <result column="file_size" jdbcType="BIGINT" property="fileSize" />
-    <result column="torrent_create_time" jdbcType="TIMESTAMP" property="torrentCreateTime" />
     <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.github.lyrric.down.entity.Torrent">
@@ -17,10 +16,5 @@
     -->
     <result column="files" jdbcType="LONGVARCHAR" property="files" />
   </resultMap>
-  <sql id="Blob_Column_List">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    files
-  </sql>
+
 </mapper>

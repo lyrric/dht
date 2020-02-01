@@ -56,21 +56,6 @@ class Torrent : BaseEntity() {
     @Column(name = "file_size")
     var fileSize: Long? = null
     /**
-     * 获取创建时间
-     *
-     * @return torrent_create_time - 创建时间
-     */
-    /**
-     * 设置创建时间
-     *
-     * @param torrentCreateTime 创建时间
-     */
-    /**
-     * 创建时间
-     */
-    @Column(name = "torrent_create_time")
-    var torrentCreateTime: Date? = null
-    /**
      * 获取入库时间
      *
      * @return add_time - 入库时间

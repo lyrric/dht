@@ -61,7 +61,6 @@ class TorrentService {
                 torrent.fileName = torrentInfo.fileName
                 torrent.fileSize = torrentInfo.fileSize
                 torrent.files = torrentInfo.files
-                torrent.torrentCreateTime = Date(torrentInfo.createDate)
                 torrent.addTime = Date()
                 saveBTSync(torrent)
             }
