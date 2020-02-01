@@ -40,7 +40,8 @@ public class DownloadTask implements Runnable {
 			if (torrent == null) {  //下载失败
 				return;
 			}
-			RedisTemplate redisTemplate = SpringContextUtil.getBean(RedisTemplate.class);
+			//noinspection unchecked
+			RedisTemplate<String, Object> redisTemplate = (RedisTemplate<String, Object>)SpringContextUtil.getBean("dhtRedisTemplate");
 			redisTemplate.opsForList().rightPush(RedisConstant.KEY_TORRENT, torrent);
 //			log.info("[{}:{}] Download torrent success, info hash is {}",
 //					msgInfo.getIp(),

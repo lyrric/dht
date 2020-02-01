@@ -53,7 +53,7 @@ class TorrentService {
 
     fun saveBT() {
         while(true){
-            val torrentInfo: Any? = dhtRedisTemplate.opsForList().leftPop(RedisConstant.KEY_HASH_INFO)
+            val torrentInfo: Any? = dhtRedisTemplate.opsForList().leftPop(RedisConstant.KEY_TORRENT)
             if(torrentInfo != null && torrentInfo is TorrentInfo){
                 val torrent = Torrent();
                 torrent.infoHash = torrentInfo.infoHash
