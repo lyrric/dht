@@ -25,11 +25,12 @@ class TorrentServiceImpl : TorrentService{
 
     @StreamListener("torrent-message")
     override fun torrentMessageIn(torrentInfo: TorrentInfo) {
-        log.info("torrentMessageIn---------------")
+        log.info("torrentMessageIn---------------{}", torrentInfo.infoHash)
         val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
         weekend.weekendCriteria()
                 .andEqualTo(Torrent::getInfoHash.name, torrentInfo.infoHash)
         if(torrentMapper.selectCountByExample(weekend) > 0){
+            log.info(" torrentMapper exist in db")
             return
         }
         val torrent = Torrent();
@@ -43,6 +44,7 @@ class TorrentServiceImpl : TorrentService{
         synchronized(this){
             if(torrents.stream().anyMatch{t->t.infoHash == torrent.infoHash} ){
                 //判断列表中是否有相同hash，几率小，但是还是要避免，否则批量插入会失败
+                log.info(" torrentMapper exist in list")
                 return
             }
             torrents.addLast(torrent)
