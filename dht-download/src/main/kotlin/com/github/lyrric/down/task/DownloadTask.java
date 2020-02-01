@@ -1,7 +1,7 @@
 package com.github.lyrric.down.task;
 
 import com.github.lyrric.common.entity.DownloadMsgInfo;
-import com.github.lyrric.common.util.SpringContextUtil;
+import com.github.lyrric.down.util.SpringContextUtil;
 import com.github.lyrric.common.util.SystemClock;
 import com.github.lyrric.down.client.Constants;
 import com.github.lyrric.down.client.PeerWireClient;

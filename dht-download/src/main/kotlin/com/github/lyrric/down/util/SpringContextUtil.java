@@ -1,4 +1,4 @@
-package com.github.lyrric.common.util;
+package com.github.lyrric.down.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
