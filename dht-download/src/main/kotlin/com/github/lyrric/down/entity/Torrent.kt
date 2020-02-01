@@ -2,7 +2,6 @@ package com.github.lyrric.down.entity
 
 import java.util.*
 import javax.persistence.Column
-import javax.persistence.Id
 
 class Torrent : BaseEntity() {
     /**
@@ -18,7 +17,6 @@ class Torrent : BaseEntity() {
     /**
      * 种子hash
      */
-    @Id
     @Column(name = "info_hash")
     var infoHash: String? = null
         set(infoHash) {
