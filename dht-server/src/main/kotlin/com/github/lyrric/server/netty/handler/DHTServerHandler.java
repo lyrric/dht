@@ -206,8 +206,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			//放入缓存，下次收到相同种子hash的请求，则不用再记录
 			stringRedisTemplate.opsForValue().set(hashStr, "");
 		}
-
-		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, ByteUtil.byteArrayToHex(info_hash));
 		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
 		//send to kafka
 		messageStreams.downloadMessageOutput()
