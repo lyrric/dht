@@ -11,6 +11,7 @@ import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.util.MimeTypeUtils;
 
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 
 /***
@@ -31,7 +32,7 @@ public class DownloadTask implements Runnable {
 
 	@Override
 	public void run() {
-		log.info("download-message-in, info hash is {}", msgInfo.getInfoHash());
+		//log.info("download-message-in, info hash is {}", new BigInteger(msgInfo.getInfoHash()).toString(16));
 		//由于下载线程消费的速度总是比 dht server 生产的速度慢，所以要做一下时间限制，否则程序越跑越慢
 		if (SystemClock.now() - msgInfo.getTimestamp() >= Constants.MAX_LOSS_TIME) {
 			return;
