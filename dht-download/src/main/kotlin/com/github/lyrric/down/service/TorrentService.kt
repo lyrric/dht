@@ -46,9 +46,9 @@ class TorrentService {
     @PostConstruct
     fun init() {
         //下载种子信息
-        Thread().run { downTorrent() }
+        Thread {downTorrent()}.start()
         //保存种子
-        Thread().run { saveBT() }
+        Thread {saveBT() }.start()
     }
 
 
