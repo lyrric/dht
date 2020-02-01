@@ -8,13 +8,13 @@ spring:
           brokers: 127.0.0.1
           min-partition-count: 1
       bindings:
-        download-message-in:
+        download-message:
           group: torrent-download-group
           destination: downloadMessages
           contentType: application/json
           consumer:
             compressionType: gzip
-        torrent-message-out:
+        torrent-message:
           destination: torrentMessages
           contentType: application/json
           producer:

@@ -6,7 +6,7 @@ import org.springframework.messaging.MessageChannel;
 
 public interface MessageStreams {
 
-	@Output(value = "download-message-out")
+	@Output(value = "download-message")
 	MessageChannel downloadMessageOutput();
 
 }

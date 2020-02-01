@@ -6,10 +6,10 @@ import org.springframework.messaging.MessageChannel;
 
 public interface MessageStreams {
 
-	@Input("download-message-out")
+	@Input("download-message")
 	MessageChannel downloadMessageInput();
 
-	@Output("torrent-message-out")
+	@Output("torrent-message")
 	MessageChannel torrentMessageOutput();
 
 }
