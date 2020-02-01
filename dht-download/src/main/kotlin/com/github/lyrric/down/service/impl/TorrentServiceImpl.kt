@@ -25,7 +25,7 @@ class TorrentServiceImpl : TorrentService{
 
     @StreamListener("torrent-message")
     override fun torrentMessageIn(torrentInfo: TorrentInfo) {
-        log.info("torrentMessageIn---------------{}", torrentInfo.infoHash)
+        log.info("torrentMessageIn---------------{}, size: {}", torrentInfo.infoHash, torrents.size)
         val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
         weekend.weekendCriteria()
                 .andEqualTo(Torrent::getInfoHash.name, torrentInfo.infoHash)
