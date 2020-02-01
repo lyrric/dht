@@ -13,6 +13,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
+import kotlin.text.Charsets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -207,6 +208,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			stringRedisTemplate.opsForValue().set(hashStr, "");
 		}
 		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
+		log.info("info_hash[AnnouncePeer] : {}", new BigInteger(1,hashStr.getBytes(Charsets.UTF_8)).toString(16));
+
 		//send to kafka
 		messageStreams.downloadMessageOutput()
 				.send(MessageBuilder
