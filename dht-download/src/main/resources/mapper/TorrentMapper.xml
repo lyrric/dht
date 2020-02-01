@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="info_hash" jdbcType="VARCHAR" property="infoHash" />
+    <result column="info_hash" jdbcType="VARCHAR" property="infoHash" />
     <result column="file_type" jdbcType="VARCHAR" property="fileType" />
     <result column="file_name" jdbcType="VARCHAR" property="fileName" />
     <result column="file_size" jdbcType="BIGINT" property="fileSize" />
@@ -18,12 +18,6 @@
     -->
     <result column="files" jdbcType="LONGVARCHAR" property="files" />
   </resultMap>
-  <sql id="Base_Column_List">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    info_hash, file_type, file_name, file_size, torrent_create_time, add_time
-  </sql>
   <sql id="Blob_Column_List">
     <!--
       WARNING - @mbg.generated
