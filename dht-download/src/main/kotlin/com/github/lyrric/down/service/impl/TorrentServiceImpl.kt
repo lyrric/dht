@@ -53,7 +53,7 @@ class TorrentServiceImpl : TorrentService{
             torrents.add(torrent)
             //每满50个添加进数据库
             if(torrents.size >= 50){
-                log.info("-------------------------------torrentMapper.insertList(torrents)---------------")
+                log.info("-------------------------------save 50 torrent to db---------------")
                 torrentMapper.insertList(torrents)
                 torrents.clear()
             }

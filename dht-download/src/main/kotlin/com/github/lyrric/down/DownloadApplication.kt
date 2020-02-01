@@ -49,7 +49,7 @@ class DownloadApplication {
 
     @PostConstruct
     fun init() { //max task bound 5000
-        blockingExecutor = BlockingExecutor(Executors.newFixedThreadPool(nThreads), 5000)
+        blockingExecutor = BlockingExecutor(Executors.newFixedThreadPool(nThreads), 100)
     }
 
     @PreDestroy

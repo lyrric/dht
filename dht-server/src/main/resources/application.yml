@@ -5,7 +5,7 @@ netty:
   udp:
     port: 6688
   so:
-    rcvbuf: 268435456
+    rcvbuf: 1048,576 #1g
     sndbuf: 65536
 
 spring:
