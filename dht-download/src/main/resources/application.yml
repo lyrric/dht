@@ -14,11 +14,15 @@ spring:
           contentType: application/json
           consumer:
             compressionType: gzip
+            auto-offset-reset: earliest
         torrent-message:
           destination: torrentMessages
           contentType: application/json
           producer:
             compressionType: gzip
+          consumer:
+            compressionType: gzip
+            auto-offset-reset: earliest
 logging:
   level:
     root: info
