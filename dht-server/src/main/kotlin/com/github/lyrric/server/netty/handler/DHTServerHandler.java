@@ -208,12 +208,11 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			stringRedisTemplate.opsForValue().set(hashStr, "");
 		}
 		log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
-		log.info("info_hash[AnnouncePeer] : {}", new BigInteger(1,hashStr.getBytes(Charsets.UTF_8)).toString(16));
 
 		//send to kafka
 		messageStreams.downloadMessageOutput()
 				.send(MessageBuilder
-						.withPayload(new DownloadMsgInfo(sender.getHostString(), port, nodeId, hashStr))
+						.withPayload(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash))
 						.setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
 						.build());
 	}

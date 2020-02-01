@@ -66,9 +66,9 @@ public class PeerWireClient {
 	}
 
 
-	public void downloadMetadata(InetSocketAddress address, byte[] peerId, String infoHash) {
+	public void downloadMetadata(InetSocketAddress address, byte[] peerId, byte[] infoHash) {
 		this.peerId = peerId;
-		hexHash = infoHash;
+		hexHash = new BigInteger(1,infoHash).toString(16);;
 		socket = new Socket();
 		try {
 			socket.connect(address, Constants.CONNECT_TIMEOUT);
@@ -81,7 +81,7 @@ public class PeerWireClient {
 			out = socket.getOutputStream();
 
 			setNext(1, onProtocolLen);
-			sendHandShake(infoHash.getBytes(Charsets.UTF_8));
+			sendHandShake(infoHash);
 
 			map = new HashMap<>();
 			readBuff = new byte[256];
