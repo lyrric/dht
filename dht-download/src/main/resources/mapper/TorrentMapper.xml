@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.lyrric.down.mapper.TorrentMapper">
+  <resultMap id="BaseResultMap" type="com.github.lyrric.down.entity.Torrent">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="info_hash" jdbcType="VARCHAR" property="infoHash" />
+    <result column="file_type" jdbcType="VARCHAR" property="fileType" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_size" jdbcType="BIGINT" property="fileSize" />
+    <result column="torrent_create_time" jdbcType="TIMESTAMP" property="torrentCreateTime" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.github.lyrric.down.entity.Torrent">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="files" jdbcType="LONGVARCHAR" property="files" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    info_hash, file_type, file_name, file_size, torrent_create_time, add_time
+  </sql>
+  <sql id="Blob_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    files
+  </sql>
+</mapper>

@@ -1,14 +1,13 @@
 package com.github.lyrric.down.client;
 
 import com.github.lyrric.common.entity.Node;
-import com.github.lyrric.common.entity.Torrent;
+import com.github.lyrric.common.entity.TorrentInfo;
 import com.github.lyrric.common.entity.Tree;
 import com.github.lyrric.common.util.ByteUtil;
 import com.github.lyrric.common.util.ExtensionUtil;
 import com.github.lyrric.common.util.JSONUtil;
 import com.github.lyrric.common.util.StringUtil;
 import com.github.lyrric.common.util.bencode.BencodingUtils;
-import kotlin.text.Charsets;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -17,7 +16,6 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
@@ -48,7 +46,7 @@ public class PeerWireClient {
 	private int nextSize;
 	private NextFunction next;
 
-	private Torrent torrent;
+	private TorrentInfo torrent;
 
 	private static ThreadLocal<PipedStream> cachedBuff = new ThreadLocal<>();
 
@@ -59,9 +57,9 @@ public class PeerWireClient {
 	/**
 	 * 下载完成监听器
 	 */
-	private Consumer<Torrent> onFinishedListener;
+	private Consumer<TorrentInfo> onFinishedListener;
 
-	public void setOnFinishedListener(Consumer<Torrent> listener) {
+	public void setOnFinishedListener(Consumer<TorrentInfo> listener) {
 		this.onFinishedListener = listener;
 	}
 
@@ -226,7 +224,7 @@ public class PeerWireClient {
 	 * @param map
 	 * @return java.util.Optional<cc.dodder.common.entity.Torrent>
 	 */
-	private Torrent parseTorrent(Map map) throws Exception {
+	private TorrentInfo parseTorrent(Map map) throws Exception {
 		String encoding = null;
 		Map<String, Object> info;
 		if (map.containsKey("info"))
@@ -239,7 +237,7 @@ public class PeerWireClient {
 		if (map.containsKey("encoding"))
 			encoding = (String) map.get("encoding");
 
-		Torrent torrent = new Torrent();
+		TorrentInfo torrent = new TorrentInfo();
 
 		if (map.containsKey("creation date"))
 			torrent.setCreateDate(((BigInteger) map.get("creation date")).longValue());

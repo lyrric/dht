@@ -1,15 +1,51 @@
 package com.github.lyrric.down.service.impl
 
-import com.github.lyrric.common.entity.Torrent
+import com.github.lyrric.common.entity.TorrentInfo
+import com.github.lyrric.down.entity.Torrent
+import com.github.lyrric.down.mapper.TorrentMapper
 import com.github.lyrric.down.service.TorrentService
 import org.springframework.cloud.stream.annotation.StreamListener
 import org.springframework.stereotype.Service
+import tk.mybatis.mapper.weekend.Weekend
+import java.util.*
+import javax.annotation.Resource
 
 @Service
 class TorrentServiceImpl : TorrentService{
 
-    @StreamListener("torrent-message")
-    override fun torrentMessageIn(torrent: Torrent) {
+    @Resource
+    private lateinit var torrentMapper: TorrentMapper
 
+    private val torrents:LinkedList<Torrent> = LinkedList();
+
+
+    @StreamListener("torrent-message")
+    override fun torrentMessageIn(torrentInfo: TorrentInfo) {
+        val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
+        weekend.weekendCriteria()
+                .andEqualTo(Torrent::getInfoHash.name, torrentInfo.infoHash)
+        if(torrentMapper.selectCountByExample(weekend) > 0){
+            return
+        }
+        val torrent = Torrent();
+        torrent.infoHash = torrentInfo.infoHash
+        torrent.fileName = torrentInfo.fileName
+        torrent.fileSize = torrentInfo.fileSize
+        torrent.fileType = torrentInfo.fileType
+        torrent.files = torrentInfo.files
+        torrent.torrentCreateTime = Date(torrentInfo.createDate)
+        torrent.addTime = Date()
+        synchronized(this){
+            if(torrents.stream().anyMatch{t->t.infoHash == torrent.infoHash} ){
+                //判断列表中是否有相同hash，几率小，但是还是要避免，否则批量插入会失败
+                return
+            }
+            torrents.addLast(torrent)
+            //每满50个添加进数据库
+            if(torrents.size >= 50){
+                torrentMapper.insertList(torrents)
+                torrents.clear()
+            }
+        }
     }
 }

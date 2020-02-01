@@ -77,7 +77,7 @@ public class NettyConfig implements ApplicationListener<ContextClosedEvent> {
 		Map<ChannelOption<?>, Object> options = new HashMap<ChannelOption<?>, Object>();
 		options.put(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 		options.put(ChannelOption.SO_BROADCAST, true);
-		options.put(ChannelOption.SO_RCVBUF, rcvbuf);
+		//options.put(ChannelOption.SO_RCVBUF, rcvbuf);
 		options.put(ChannelOption.SO_SNDBUF, sndbuf);
 		return options;
 	}

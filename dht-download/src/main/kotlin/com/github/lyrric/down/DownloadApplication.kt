@@ -14,10 +14,12 @@ import org.springframework.cloud.stream.annotation.StreamListener
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.bind.annotation.RestController
+import tk.mybatis.spring.annotation.MapperScan
 import java.util.concurrent.Executors
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
+@MapperScan(basePackages = ["com.github.lyrric.down.mapper"])
 @Slf4j
 @EnableScheduling
 @RestController

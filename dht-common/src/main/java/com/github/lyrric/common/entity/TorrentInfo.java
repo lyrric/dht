@@ -16,7 +16,7 @@ import java.io.Serializable;
 //@Document(indexName = "dodder", type = "torrent")
 //@Mapping(mappingPath = "torrent_search_mapping.json")
 //@Setting(settingPath = "elasticsearch_custom_comma_analyzer.json")
-public class Torrent implements Serializable {
+public class TorrentInfo implements Serializable {
 
     @Id
     private String infoHash;
@@ -29,10 +29,10 @@ public class Torrent implements Serializable {
 
     private String files;
 
-    public Torrent() {
+    public TorrentInfo() {
     }
 
-    public Torrent(String infoHash, String fileType, String fileName, long fileSize, long createDate, String files) {
+    public TorrentInfo(String infoHash, String fileType, String fileName, long fileSize, long createDate, String files) {
         this.infoHash = infoHash;
         this.fileType = fileType;
         this.fileName = fileName;

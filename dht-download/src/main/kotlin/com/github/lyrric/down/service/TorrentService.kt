@@ -1,8 +1,8 @@
 package com.github.lyrric.down.service
 
-import com.github.lyrric.common.entity.Torrent
+import com.github.lyrric.common.entity.TorrentInfo
 
 interface TorrentService {
 
-    fun torrentMessageIn(torrent: Torrent)
+    fun torrentMessageIn(torrentInfo: TorrentInfo)
 }

@@ -1,7 +1,7 @@
 package com.github.lyrric.common.util;
 
 import com.github.lyrric.common.entity.Node;
-import com.github.lyrric.common.entity.Torrent;
+import com.github.lyrric.common.entity.TorrentInfo;
 import com.github.lyrric.common.entity.Tree;
 import info.monitorenter.cpdetector.io.*;
 
@@ -192,7 +192,7 @@ public class StringUtil {
 	* @param torrent
 	* @return java.util.List<cc.dodder.common.entity.Node>
 	*/
-	public static List<Node> getFileList(Torrent torrent) {
+	public static List<Node> getFileList(TorrentInfo torrent) {
 		if (torrent.getFiles() == null) {   //单文件
 			int pos = torrent.getFileName().lastIndexOf(".");
 			String sname = torrent.getFileName();
