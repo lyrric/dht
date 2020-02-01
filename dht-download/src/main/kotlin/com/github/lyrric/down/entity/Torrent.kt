@@ -23,24 +23,6 @@ class Torrent : BaseEntity() {
             field = infoHash?.trim { it <= ' ' }
         }
     /**
-     * 获取类型
-     *
-     * @return file_type - 类型
-     */
-    /**
-     * 设置类型
-     *
-     * @param fileType 类型
-     */
-    /**
-     * 类型
-     */
-    @Column(name = "file_type")
-    var fileType: String? = null
-        set(fileType) {
-            field = fileType?.trim { it <= ' ' }
-        }
-    /**
      * 获取名称
      *
      * @return file_name - 名称

@@ -6,7 +6,6 @@
       WARNING - @mbg.generated
     -->
     <result column="info_hash" jdbcType="VARCHAR" property="infoHash" />
-    <result column="file_type" jdbcType="VARCHAR" property="fileType" />
     <result column="file_name" jdbcType="VARCHAR" property="fileName" />
     <result column="file_size" jdbcType="BIGINT" property="fileSize" />
     <result column="torrent_create_time" jdbcType="TIMESTAMP" property="torrentCreateTime" />

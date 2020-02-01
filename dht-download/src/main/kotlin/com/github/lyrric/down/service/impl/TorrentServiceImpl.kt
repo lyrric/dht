@@ -30,7 +30,6 @@ class TorrentServiceImpl : TorrentService{
         torrent.infoHash = torrentInfo.infoHash
         torrent.fileName = torrentInfo.fileName
         torrent.fileSize = torrentInfo.fileSize
-        torrent.fileType = torrentInfo.fileType
         torrent.files = torrentInfo.files
         torrent.torrentCreateTime = Date(torrentInfo.createDate)
         torrent.addTime = Date()
