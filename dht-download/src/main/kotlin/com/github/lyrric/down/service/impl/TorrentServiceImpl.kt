@@ -35,11 +35,12 @@ class TorrentServiceImpl : TorrentService{
         torrent.torrentCreateTime = Date(torrentInfo.createDate)
         torrent.addTime = Date()
         sync(torrent)
+        log.info("torrentMessageIn111---------------{}, size: {}", torrent.infoHash, torrents.size)
     }
 
     @Synchronized
     fun sync(torrent: Torrent){
-        log.info("torrentMessageIn111---------------{}, size: {}", torrent.infoHash, torrents.size)
+        log.info("torrentMessageIn222---------------{}, size: {}", torrent.infoHash, torrents.size)
         val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
         weekend.weekendCriteria()
                 .andEqualTo(Torrent::getInfoHash.name, torrent.infoHash)
