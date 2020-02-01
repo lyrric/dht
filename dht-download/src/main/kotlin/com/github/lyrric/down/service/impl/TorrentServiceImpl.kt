@@ -21,11 +21,13 @@ class TorrentServiceImpl : TorrentService{
 
     private val torrents:LinkedList<Torrent> = LinkedList();
 
+    private val random:Int  = Random().nextInt();
+
     private val log:Logger = LoggerFactory.getLogger(this.javaClass)
 
     @StreamListener("torrent-message")
     override fun torrentMessageIn(torrentInfo: TorrentInfo) {
-        log.info("torrentMessageIn---------------{}, size: {}", torrentInfo.infoHash, torrents.size)
+        log.info("torrentMessageIn---------------{}, size: {}, random:{}", torrentInfo.infoHash, torrents.size, random)
         val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
         weekend.weekendCriteria()
                 .andEqualTo(Torrent::getInfoHash.name, torrentInfo.infoHash)
