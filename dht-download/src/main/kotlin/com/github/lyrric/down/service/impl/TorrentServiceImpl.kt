@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class TorrentServiceImpl : TorrentService{
 
-    @StreamListener("torrent-message-out")
+    @StreamListener("torrent-message")
     override fun torrentMessageIn(torrent: Torrent) {
 
     }
