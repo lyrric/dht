@@ -44,9 +44,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Resource
 	private DHTServer dhtServer;
 	@Resource
-	private StringRedisTemplate stringRedisTemplate;
-	@Resource
-	private RedisTemplate<String, DownloadMsgInfo> redisTemplate;
+	private RedisTemplate<String, Object> redisTemplate;
 
 	private AtomicInteger connectNum = new AtomicInteger(0);
 
@@ -56,7 +54,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) {
 
 		byte[] buff = new byte[packet.content().readableBytes()];
 		packet.content().readBytes(buff);
@@ -152,7 +150,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		if(info_hash == null){
 			return;
 		}
-		if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16)))) {
+		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16));
+		if (exist != null && exist){
 			//dhtServer.bloomFilter.add(hashStr);
 			return;
 		}
@@ -202,12 +201,12 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			dhtServer.sendKRPC(packet);
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
 			//check exists, if exists then add to bloom filter
-			if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
+			if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
 				//dhtServer.bloomFilter.add(hashStr);
 				return;
 			}else{
 				//放入缓存，下次收到相同种子hash的请求，则不用再记录
-				stringRedisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
+				redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
 				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
 			}
 
