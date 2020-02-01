@@ -49,10 +49,10 @@ public class DownloadTask implements Runnable {
 					.send(MessageBuilder.withPayload(torrent)
 							.setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
 							.build());
-			log.info("[{}:{}] Download torrent success, info hash is {}",
-					msgInfo.getIp(),
-					msgInfo.getPort(),
-					torrent.getInfoHash());
+//			log.info("[{}:{}] Download torrent success, info hash is {}",
+//					msgInfo.getIp(),
+//					msgInfo.getPort(),
+//					torrent.getInfoHash());
 		});
 		wireClient.downloadMetadata(new InetSocketAddress(msgInfo.getIp(), msgInfo.getPort()), msgInfo.getNodeId(), msgInfo.getInfoHash());
 	}
