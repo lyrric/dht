@@ -41,7 +41,7 @@ class TorrentServiceImpl : TorrentService{
     @Synchronized
     fun sync(torrent: Torrent){
         log.info("torrentMessageIn222---------------{}, size: {}", torrent.infoHash, torrents.size)
-        val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
+        /*val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
         weekend.weekendCriteria()
                 .andEqualTo(Torrent::getInfoHash.name, torrent.infoHash)
         if(torrentMapper.selectCountByExample(weekend) > 0){
@@ -52,7 +52,7 @@ class TorrentServiceImpl : TorrentService{
             //判断列表中是否有相同hash，几率小，但是还是要避免，否则批量插入会失败
             log.info(" torrentMapper exist in list")
             return
-        }
+        }*/
         log.info(" torrents.addLast(torrent)")
         torrents.add(torrent)
         //每满50个添加进数据库
