@@ -14,7 +14,7 @@ spring:
   application:
     name: torrent-download-service
   redis:
-    host:
+    host: 127.0.0.1
     port: 6379
     jedis:
       pool:
