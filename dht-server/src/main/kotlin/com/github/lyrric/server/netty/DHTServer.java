@@ -1,7 +1,6 @@
 package com.github.lyrric.server.netty;
 
 
-import com.github.lyrric.common.util.BloomFilter;
 import com.github.lyrric.common.util.NodeIdUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -36,7 +35,7 @@ public class DHTServer {
 
 	private ChannelFuture serverChannelFuture;
 
-	public BloomFilter bloomFilter;
+//	public BloomFilter bloomFilter;
 
 	private String filterSavePath;
 
@@ -68,20 +67,20 @@ public class DHTServer {
 		serverChannelFuture.channel().closeFuture();
 
 		//init bloom filter
-		bloomFilter = new BloomFilter(10000000);
-		String path = System.getProperty("java.class.path");
-		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
-		int lastIndex = path.lastIndexOf(File.separator) + 1;
-		filterSavePath = path.substring(firstIndex, lastIndex) + "filter.data";
-		File file = new File(filterSavePath);
-		if (file.exists())
-			BloomFilter.readFilterFromFile(filterSavePath);
+//		bloomFilter = new BloomFilter(10000000);
+//		String path = System.getProperty("java.class.path");
+//		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
+//		int lastIndex = path.lastIndexOf(File.separator) + 1;
+//		filterSavePath = path.substring(firstIndex, lastIndex) + "filter.data";
+//		File file = new File(filterSavePath);
+//		if (file.exists())
+//			BloomFilter.readFilterFromFile(filterSavePath);
 	}
 
-	@PreDestroy
-	public void saveBloomFilter() {
-		bloomFilter.saveFilterToFile(filterSavePath);
-	}
+//	@PreDestroy
+//	public void saveBloomFilter() {
+//		bloomFilter.saveFilterToFile(filterSavePath);
+//	}
 
 	/**
 	 * 发送 KRPC 协议数据报文

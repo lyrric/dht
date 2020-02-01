@@ -1,17 +1,14 @@
 package com.github.lyrric.down.task;
 
+import com.github.lyrric.common.constant.RedisConstant;
 import com.github.lyrric.common.entity.DownloadMsgInfo;
-import com.github.lyrric.down.util.SpringContextUtil;
 import com.github.lyrric.common.util.SystemClock;
 import com.github.lyrric.down.client.Constants;
 import com.github.lyrric.down.client.PeerWireClient;
-import com.github.lyrric.down.stream.MessageStreams;
+import com.github.lyrric.down.util.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.util.MimeTypeUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 
-import java.math.BigInteger;
 import java.net.InetSocketAddress;
 
 /***
@@ -24,7 +21,7 @@ import java.net.InetSocketAddress;
 public class DownloadTask implements Runnable {
 
 	private DownloadMsgInfo msgInfo;
-	private MessageStreams messageStreams;
+
 
 	public DownloadTask(DownloadMsgInfo msgInfo) {
 		this.msgInfo = msgInfo;
@@ -43,12 +40,8 @@ public class DownloadTask implements Runnable {
 			if (torrent == null) {  //下载失败
 				return;
 			}
-			messageStreams = (MessageStreams) SpringContextUtil.getBean(MessageStreams.class);
-			//丢进 kafka 消息队列进行入库及索引操作
-			messageStreams.torrentMessageOutput()
-					.send(MessageBuilder.withPayload(torrent)
-							.setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
-							.build());
+			RedisTemplate redisTemplate = SpringContextUtil.getBean(RedisTemplate.class);
+			redisTemplate.boundListOps(RedisConstant.KEY_TORRENT).rightPush(torrent);
 //			log.info("[{}:{}] Download torrent success, info hash is {}",
 //					msgInfo.getIp(),
 //					msgInfo.getPort(),

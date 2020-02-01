@@ -13,34 +13,23 @@ spring:
       minimum-idle: 5
   application:
     name: torrent-download-service
-  cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: 127.0.0.1
-          min-partition-count: 1
-      bindings:
-        download-message:
-          group: torrent-download-group
-          destination: downloadMessages
-          contentType: application/json
-          consumer:
-            compressionType: gzip
-            auto-offset-reset: earliest
-        torrent-message:
-          destination: torrentMessages
-          contentType: application/json
-          producer:
-            compressionType: gzip
-          consumer:
-            compressionType: gzip
-            auto-offset-reset: earliest
+  redis:
+    host:
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1ms
+    password:
+
 logging:
   level:
     root: info
 
 download:
   num:
-    thread: 20
+    thread: 50
 server:
   port: 8767

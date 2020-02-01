@@ -5,7 +5,7 @@ netty:
   udp:
     port: 6688
   so:
-    rcvbuf: 1048,576 #1g
+    rcvbuf: 1048576 #1g
     sndbuf: 65536
 
 spring:
@@ -18,21 +18,9 @@ spring:
         min-idle: 0
         max-active: 8
         max-wait: -1ms
+    password:
   application:
     name: torrent-download-service
-  cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: 127.0.0.1
-          min-partition-count: 1
-      bindings:
-        download-message:
-          group: torrent-download-group
-          destination: downloadMessages
-          contentType: application/json
-          producer:
-            compressionType: gzip
 
 
 

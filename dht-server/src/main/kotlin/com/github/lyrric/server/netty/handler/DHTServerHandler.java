@@ -1,26 +1,22 @@
 package com.github.lyrric.server.netty.handler;
 
+import com.github.lyrric.common.constant.RedisConstant;
 import com.github.lyrric.common.entity.DownloadMsgInfo;
 import com.github.lyrric.common.util.ByteUtil;
 import com.github.lyrric.common.util.NodeIdUtil;
 import com.github.lyrric.common.util.bencode.BencodingUtils;
-import com.github.lyrric.server.netty.DHTServer;
 import com.github.lyrric.server.model.Node;
 import com.github.lyrric.server.model.UniqueBlockingQueue;
-import com.github.lyrric.server.netty.stream.MessageStreams;
+import com.github.lyrric.server.netty.DHTServer;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
-import kotlin.text.Charsets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MimeTypeUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -50,7 +46,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Resource
 	private StringRedisTemplate stringRedisTemplate;
 	@Resource
-	private MessageStreams messageStreams;
+	private RedisTemplate<String, DownloadMsgInfo> redisTemplate;
 
 	private AtomicInteger connectNum = new AtomicInteger(0);
 
@@ -153,8 +149,10 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 */
 	private void responseGetPeers(byte[] t, byte[] info_hash, InetSocketAddress sender) {
 		//check bloom filter, if exists then don't reply it
-		if (dhtServer.bloomFilter.check(ByteUtil.byteArrayToHex(info_hash)))
+		if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16)))) {
+			//dhtServer.bloomFilter.add(hashStr);
 			return;
+		}
 		HashMap<String, Object> r = new HashMap<>();
 		r.put("token", new byte[]{info_hash[0], info_hash[1]});
 		r.put("nodes", new byte[]{});
@@ -200,21 +198,18 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		DatagramPacket packet = createPacket(t, "r", r, sender);
 		dhtServer.sendKRPC(packet);
 		//check exists, if exists then add to bloom filter
-		if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(hashStr))) {
-			dhtServer.bloomFilter.add(hashStr);
+		if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
+			//dhtServer.bloomFilter.add(hashStr);
 			return;
 		}else{
 			//放入缓存，下次收到相同种子hash的请求，则不用再记录
-			stringRedisTemplate.opsForValue().set(hashStr, "");
+			stringRedisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
 		}
 		//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
+		//send to redis
+		redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).rightPush(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
 
-		//send to kafka
-		messageStreams.downloadMessageOutput()
-				.send(MessageBuilder
-						.withPayload(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash))
-						.setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
-						.build());
+
 	}
 
 	/**
