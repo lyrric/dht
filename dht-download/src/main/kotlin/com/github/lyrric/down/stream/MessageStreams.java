@@ -6,7 +6,7 @@ import org.springframework.messaging.MessageChannel;
 
 public interface MessageStreams {
 
-	@Input("download-message-in")
+	@Input("download-message-out")
 	MessageChannel downloadMessageInput();
 
 	@Output("torrent-message-out")

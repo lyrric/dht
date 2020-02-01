@@ -30,7 +30,7 @@ class DownloadApplication {
 
     private var blockingExecutor: BlockingExecutor? = null
 
-    @StreamListener("download-message-in")
+    @StreamListener("download-message-out")
     fun handleMessage(msgInfo: DownloadMsgInfo?) { //submit to blocking executor
         try {
             blockingExecutor?.execute(DownloadTask(msgInfo))
