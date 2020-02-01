@@ -18,6 +18,24 @@ spring:
         min-idle: 0
         max-active: 8
         max-wait: -1ms
+  application:
+    name: torrent-download-service
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: 127.0.0.1
+          min-partition-count: 1
+      bindings:
+        download-message:
+          group: torrent-download-group
+          destination: downloadMessages
+          contentType: application/json
+          producer:
+            compressionType: gzip
+
+
+
 
 logging:
   level:
