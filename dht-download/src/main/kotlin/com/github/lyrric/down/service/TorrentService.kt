@@ -54,7 +54,7 @@ class TorrentService {
 
     fun saveBT() {
         while(true){
-            val torrentInfo: Any? = redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).rightPop()
+            val torrentInfo: Any? = redisTemplate.opsForList().rightPop(RedisConstant.KEY_HASH_INFO)
             if(torrentInfo != null && torrentInfo is TorrentInfo){
                 val torrent = Torrent();
                 torrent.infoHash = torrentInfo.infoHash
@@ -99,7 +99,7 @@ class TorrentService {
         //max task bound 5000
         blockingExecutor = BlockingExecutor(Executors.newFixedThreadPool(nThreads), 5000)
         while(true){
-            val msg: Any? = redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).rightPop()
+            val msg: Any? = redisTemplate.opsForList().rightPop(RedisConstant.KEY_HASH_INFO)
             if(msg != null && msg is DownloadMsgInfo){
                 blockingExecutor?.execute(DownloadTask(msg))
             }

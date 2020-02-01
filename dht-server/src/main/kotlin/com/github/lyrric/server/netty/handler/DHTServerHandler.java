@@ -205,7 +205,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			}else{
 				//放入缓存，下次收到相同种子hash的请求，则不用再记录
 				stringRedisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
-				redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).rightPush(new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
+				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
 			}
 
 		}catch (Exception e){
