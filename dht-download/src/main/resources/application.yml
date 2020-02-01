@@ -26,3 +26,5 @@ logging:
 download:
   num:
     thread: 20
+server:
+  port: 8767
