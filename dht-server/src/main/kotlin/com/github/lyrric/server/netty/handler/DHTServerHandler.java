@@ -206,7 +206,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			byte[] nodeId = NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, id);
 			r.put("id", nodeId);
 			DatagramPacket packet = createPacket(t, "r", r, sender);
-			dhtServer.sendKRPC(packet);
+			//dhtServer.sendKRPC(packet);
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
 			//check exists, if exists then add to bloom filter
 			if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
