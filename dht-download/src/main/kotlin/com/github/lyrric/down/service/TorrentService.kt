@@ -55,16 +55,21 @@ class TorrentService {
 
     fun saveBT() {
         while(true){
-            val torrentInfo: Any? = dhtRedisTemplate.opsForList().leftPop(RedisConstant.KEY_TORRENT)
-            if(torrentInfo != null && torrentInfo is TorrentInfo){
-                val torrent = Torrent();
-                torrent.infoHash = torrentInfo.infoHash
-                torrent.fileName = torrentInfo.fileName
-                torrent.fileSize = torrentInfo.fileSize
-                torrent.files = torrentInfo.files
-                torrent.addTime = Date()
-                saveBTSync(torrent)
+            try {
+                val torrentInfo: Any? = dhtRedisTemplate.opsForList().leftPop(RedisConstant.KEY_TORRENT)
+                if(torrentInfo != null && torrentInfo is TorrentInfo){
+                    val torrent = Torrent();
+                    torrent.infoHash = torrentInfo.infoHash
+                    torrent.fileName = torrentInfo.fileName
+                    torrent.fileSize = torrentInfo.fileSize
+                    torrent.files = torrentInfo.files
+                    torrent.addTime = Date()
+                    saveBTSync(torrent)
+                }
+            }catch (e:Exception){
+                e.printStackTrace();
             }
+
 
         }
 
@@ -90,10 +95,15 @@ class TorrentService {
         //max task bound 5000
         blockingExecutor = BlockingExecutor(Executors.newFixedThreadPool(nThreads), 5000)
         while(true){
-            val msg: Any? = dhtRedisTemplate.opsForList().leftPop(RedisConstant.KEY_HASH_INFO)
-            if(msg != null && msg is DownloadMsgInfo){
-                blockingExecutor?.execute(DownloadTask(msg))
+            try{
+                val msg: Any? = dhtRedisTemplate.opsForList().leftPop(RedisConstant.KEY_HASH_INFO)
+                if(msg != null && msg is DownloadMsgInfo){
+                    blockingExecutor?.execute(DownloadTask(msg))
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
             }
+
         }
 
     }
