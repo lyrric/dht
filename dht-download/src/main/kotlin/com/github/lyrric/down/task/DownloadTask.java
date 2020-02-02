@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /***
  * Torrent 下载线程
@@ -22,6 +23,15 @@ public class DownloadTask implements Runnable {
 
 	private DownloadMsgInfo msgInfo;
 
+	/**
+	 * 失败次数
+	 */
+	private static AtomicInteger failedCount = new AtomicInteger(0);
+
+	/**
+	 * 总共次数
+	 */
+	private static AtomicInteger count = new AtomicInteger(0);
 
 	public DownloadTask(DownloadMsgInfo msgInfo) {
 		this.msgInfo = msgInfo;
@@ -29,20 +39,26 @@ public class DownloadTask implements Runnable {
 
 	@Override
 	public void run() {
-		//log.info("download-message-in, info hash is {}", new BigInteger(msgInfo.getInfoHash()).toString(16));
 		//由于下载线程消费的速度总是比 dht server 生产的速度慢，所以要做一下时间限制，否则程序越跑越慢
 		if (SystemClock.now() - msgInfo.getTimestamp() >= Constants.MAX_LOSS_TIME) {
 			return;
 		}
+		count.incrementAndGet();
 		PeerWireClient wireClient = new PeerWireClient();
 		//设置下载完成监听器
 		wireClient.setOnFinishedListener((torrent) -> {
-			if (torrent == null) {  //下载失败
+			if(count.get() % 100 == 0){
+				log.info("download torrent count:{}, failed:{}, success:{}", count.get(), failedCount.get(), count.get()-failedCount.get());
+			}
+			if(torrent == null){
+				failedCount.incrementAndGet();
 				return;
 			}
 			//noinspection unchecked
 			RedisTemplate<String, Object> redisTemplate = (RedisTemplate<String, Object>)SpringContextUtil.getBean("dhtRedisTemplate");
 			redisTemplate.opsForList().rightPush(RedisConstant.KEY_TORRENT, torrent);
+			//放入缓存，下次收到相同种子hash的请求，则不用再记录
+			redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+torrent.getInfoHash(), "");
 //			log.info("[{}:{}] Download torrent success, info hash is {}",
 //					msgInfo.getIp(),
 //					msgInfo.getPort(),

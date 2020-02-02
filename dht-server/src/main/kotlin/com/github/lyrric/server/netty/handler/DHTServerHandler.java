@@ -52,6 +52,10 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 	public final UniqueBlockingQueue NODES_QUEUE = new UniqueBlockingQueue();
 
+	/**
+	 * 收到的hash数量
+	 */
+	private AtomicInteger hashCount = new AtomicInteger(0);
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) {
@@ -205,9 +209,11 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				//dhtServer.bloomFilter.add(hashStr);
 				return;
 			}else{
-				//放入缓存，下次收到相同种子hash的请求，则不用再记录
-				redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
+				hashCount.incrementAndGet();
 				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
+				if(hashCount.get() % 1000 == 0){
+					log.info("info hash count:{}", hashCount.get());
+				}
 			}
 
 		}catch (Exception e){
