@@ -35,7 +35,7 @@ class TorrentService {
 
     private var blockingExecutor:BlockingExecutor? = null
 
-    val torrents = ArrayList<Torrent?>(50)
+    private var i = 0
 
     private val log:Logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -71,22 +71,11 @@ class TorrentService {
     @Synchronized
     private fun saveBTSync(torrent: Torrent){
         try {
-            val weekend:Weekend<Torrent> = Weekend(Torrent::class.java)
-            weekend.weekendCriteria()
-                    .andEqualTo(Torrent::infoHash.name, torrent.infoHash)
-            if(torrentMapper.selectCountByExample(weekend) > 0){
-                return
-            }
-            if(torrents.stream().anyMatch{t->t?.infoHash == torrent.infoHash} ){
-                //判断列表中是否有相同hash，几率小，但是还是要避免，否则批量插入会失败
-                return
-            }
-            torrents.add(torrent)
+            i++
+            torrentMapper.insert(torrent)
             //每满50个添加进数据库
-            if(torrents.size >= 50){
+            if(i %50 == 0){
                 log.info("-------------------------------save 50 torrent to db---------------")
-                torrentMapper.insertList(torrents)
-                torrents.clear()
             }
         }catch (e:Exception){
             e.printStackTrace();
