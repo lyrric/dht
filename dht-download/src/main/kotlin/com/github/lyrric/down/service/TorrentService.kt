@@ -78,10 +78,11 @@ class TorrentService {
             if(i %50 == 0){
                 log.info("-------------------------------save 50 torrent to db---------------")
             }
-        }catch (e: SQLIntegrityConstraintViolationException){
-            //hash已存在
         }catch (e:Exception){
-            e.printStackTrace();
+            //hash冲突报错，不打印日志
+            if(e !is SQLIntegrityConstraintViolationException){
+                e.printStackTrace()
+            }
         }
     }
 
