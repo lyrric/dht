@@ -267,7 +267,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				//limit the node queue size
 				log.info("NODES_QUEUE size is {}", NODES_QUEUE.size());
 				if (NODES_QUEUE.size() > 3000)
-					continue;
+					return;
 				InetAddress ip = InetAddress.getByAddress(new byte[]{nodes[i + 20], nodes[i + 21], nodes[i + 22], nodes[i + 23]});
 				InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (nodes[i + 24] << 8)) | (0x000000FF & nodes[i + 25]));
 				byte[] nid = new byte[20];
