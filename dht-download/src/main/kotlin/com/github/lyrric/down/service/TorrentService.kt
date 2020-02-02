@@ -73,12 +73,11 @@ class TorrentService {
     @Synchronized
     private fun saveBTSync(torrent: Torrent){
         try {
-            i++
             torrentMapper.insert(torrent)
-            //每满50个添加进数据库
-            if(i %50 == 0){
-                log.info("-------------------------------save 50 torrent to db---------------")
+            if(i % 50 == 0){
+                log.info("-------------------------------save 50 torrent to db total:{}", i)
             }
+            i++
         }catch (e:Exception){
             //hash冲突报错，不打印日志
             if(e !is DuplicateKeyException){
