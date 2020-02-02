@@ -64,19 +64,23 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		packet.content().readBytes(buff);
 
 		pool.execute(() -> {
+			try {
+				Map<String, ?> map = BencodingUtils.decode(buff);
 
-			Map<String, ?> map = BencodingUtils.decode(buff);
+				if (map == null || map.get("y") == null)
+					return;
 
-			if (map == null || map.get("y") == null)
-				return;
+				String y = new String((byte[]) map.get("y"));
 
-			String y = new String((byte[]) map.get("y"));
-
-			if ("q".equals(y)) {            //请求 Queries
-				onQuery(map, packet.sender());
-			} else if ("r".equals(y)) {     //回复 Responses
-				onResponse(map, packet.sender());
+				if ("q".equals(y)) {            //请求 Queries
+					onQuery(map, packet.sender());
+				} else if ("r".equals(y)) {     //回复 Responses
+					onResponse(map, packet.sender());
+				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
+
 		});
 
 	}
