@@ -46,6 +46,8 @@ class TorrentService {
      */
     @PostConstruct
     fun init() {
+
+        log.info("Runtime.getRuntime().availableProcessors()="+Runtime.getRuntime().availableProcessors())
         //下载种子信息
         Thread {downTorrent()}.start()
         //保存种子

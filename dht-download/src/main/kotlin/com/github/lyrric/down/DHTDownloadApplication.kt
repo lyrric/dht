@@ -44,7 +44,6 @@ class DHTDownloadApplication {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            println("Runtime.getRuntime().availableProcessors()="+Runtime.getRuntime().availableProcessors())
             SpringApplication.run(DHTDownloadApplication::class.java, *args)
         }
     }
