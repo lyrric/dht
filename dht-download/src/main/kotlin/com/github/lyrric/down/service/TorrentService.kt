@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import tk.mybatis.mapper.weekend.Weekend
+import java.sql.SQLIntegrityConstraintViolationException
 import java.util.*
 import java.util.concurrent.Executors
 import javax.annotation.PostConstruct
@@ -77,6 +78,8 @@ class TorrentService {
             if(i %50 == 0){
                 log.info("-------------------------------save 50 torrent to db---------------")
             }
+        }catch (e: SQLIntegrityConstraintViolationException){
+            //hash已存在
         }catch (e:Exception){
             e.printStackTrace();
         }
