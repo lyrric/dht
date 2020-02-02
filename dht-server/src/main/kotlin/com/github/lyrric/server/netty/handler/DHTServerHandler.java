@@ -206,13 +206,13 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			byte[] nodeId = NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, id);
 			r.put("id", nodeId);
 			DatagramPacket packet = createPacket(t, "r", r, sender);
-			//dhtServer.sendKRPC(packet);
+			dhtServer.sendKRPC(packet);
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
 			//check exists, if exists then add to bloom filter
-			if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
-				//dhtServer.bloomFilter.add(hashStr);
-				return;
-			}else{
+			if ( Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
+				//放入缓存，下次收到相同种子hash的请求，则不用再记录
+				redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
+
 				hashCount.incrementAndGet();
 				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
 				if(hashCount.get() % 1000 == 0){

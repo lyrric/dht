@@ -57,8 +57,6 @@ public class DownloadTask implements Runnable {
 			//noinspection unchecked
 			RedisTemplate<String, Object> redisTemplate = (RedisTemplate<String, Object>)SpringContextUtil.getBean("dhtRedisTemplate");
 			redisTemplate.opsForList().rightPush(RedisConstant.KEY_TORRENT, torrent);
-			//放入缓存，下次收到相同种子hash的请求，则不用再记录
-			redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+torrent.getInfoHash(), "");
 //			log.info("[{}:{}] Download torrent success, info hash is {}",
 //					msgInfo.getIp(),
 //					msgInfo.getPort(),
