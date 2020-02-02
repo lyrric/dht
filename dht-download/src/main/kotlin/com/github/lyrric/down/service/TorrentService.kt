@@ -4,6 +4,7 @@ import com.github.lyrric.common.constant.RedisConstant
 import com.github.lyrric.common.entity.DownloadMsgInfo
 import com.github.lyrric.common.entity.TorrentInfo
 import com.github.lyrric.down.entity.Torrent
+import com.github.lyrric.down.mapper.InfoHashListMapper
 import com.github.lyrric.down.mapper.TorrentMapper
 import com.github.lyrric.down.task.BlockingExecutor
 import com.github.lyrric.down.task.DownloadTask
@@ -28,6 +29,8 @@ class TorrentService {
 
     @Resource
     private lateinit var torrentMapper: TorrentMapper
+    @Resource
+    private lateinit var infoHashListMapper: InfoHashListMapper
 
     @Value("\${download.num.thread}")
     private var nThreads:Int = 40
@@ -46,8 +49,6 @@ class TorrentService {
      */
     @PostConstruct
     fun init() {
-
-        log.info("Runtime.getRuntime().availableProcessors()="+Runtime.getRuntime().availableProcessors())
         //下载种子信息
         Thread {downTorrent()}.start()
         //保存种子

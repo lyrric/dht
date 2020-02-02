@@ -5,6 +5,8 @@ import com.github.lyrric.common.entity.DownloadMsgInfo;
 import com.github.lyrric.common.util.ByteUtil;
 import com.github.lyrric.common.util.NodeIdUtil;
 import com.github.lyrric.common.util.bencode.BencodingUtils;
+import com.github.lyrric.server.entity.InfoHashList;
+import com.github.lyrric.server.mapper.InfoHashListMapper;
 import com.github.lyrric.server.model.Node;
 import com.github.lyrric.server.model.UniqueBlockingQueue;
 import com.github.lyrric.server.netty.DHTServer;
@@ -14,6 +16,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -45,6 +48,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private DHTServer dhtServer;
 	@Resource(name = "dhtRedisTemplate")
 	private RedisTemplate<String, Object> redisTemplate;
+	@Resource
+	private InfoHashListMapper infoHashListMapper;
 
 	private AtomicInteger connectNum = new AtomicInteger(0);
 
@@ -158,11 +163,18 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		if(info_hash == null){
 			return;
 		}
-		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16));
-		if (exist != null && exist){
-			//dhtServer.bloomFilter.add(hashStr);
+		String hashStr = new BigInteger(info_hash).toString(16);
+		if(infoHashListMapper.selectCountByHash(hashStr) > 0){
 			return;
 		}
+//		if(infoHashListMapper.selectCount(new BigInteger(info_hash).toString(16)) > 0){
+//			return;
+//		}
+//		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16));
+//		if (exist != null && exist){
+//			//dhtServer.bloomFilter.add(hashStr);
+//			return;
+//		}
 		HashMap<String, Object> r = new HashMap<>();
 		r.put("token", new byte[]{info_hash[0], info_hash[1]});
 		r.put("nodes", new byte[]{});
@@ -209,16 +221,31 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			dhtServer.sendKRPC(packet);
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
 			//check exists, if exists then add to bloom filter
-			if ( Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
-				//放入缓存，下次收到相同种子hash的请求，则不用再记录
-				redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
-
+			if(infoHashListMapper.selectCountByHash(hashStr) == 0){
 				hashCount.incrementAndGet();
 				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
 				if(hashCount.get() % 1000 == 0){
 					log.info("info hash count:{}", hashCount.get());
 				}
+				try {
+					infoHashListMapper.insert(new InfoHashList().setInfoHashAndReturn(hashStr));
+				}catch (Exception e){
+					//hash冲突报错，不打印日志
+					if(!(e instanceof DuplicateKeyException)){
+						e.printStackTrace();
+					}
+				}
 			}
+//			if ( Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
+//				//放入缓存，下次收到相同种子hash的请求，则不用再记录
+//				redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
+//
+//				hashCount.incrementAndGet();
+//				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
+//				if(hashCount.get() % 1000 == 0){
+//					log.info("info hash count:{}", hashCount.get());
+//				}
+//			}
 
 		}catch (Exception e){
 			e.printStackTrace();

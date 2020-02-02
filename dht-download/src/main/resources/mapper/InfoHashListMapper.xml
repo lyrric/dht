@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.lyrric.down.mapper.InfoHashListMapper">
+  <resultMap id="BaseResultMap" type="com.github.lyrric.down.entity.InfoHashList">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="info_hash" jdbcType="VARCHAR" property="infoHash" />
+  </resultMap>
+</mapper>
