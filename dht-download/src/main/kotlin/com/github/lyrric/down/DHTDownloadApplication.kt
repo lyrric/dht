@@ -1,7 +1,6 @@
 package com.github.lyrric.down
 
 
-import com.github.lyrric.common.entity.DownloadMsgInfo
 import lombok.extern.slf4j.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
@@ -45,6 +44,7 @@ class DHTDownloadApplication {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
+            println("Runtime.getRuntime().availableProcessors()="+Runtime.getRuntime().availableProcessors())
             SpringApplication.run(DHTDownloadApplication::class.java, *args)
         }
     }
