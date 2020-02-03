@@ -97,7 +97,7 @@
 
 
 	<build>
-		<finalName>spring-boot2</finalName>
+		<finalName>dht-web</finalName>
 		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
 		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 		<resources>
