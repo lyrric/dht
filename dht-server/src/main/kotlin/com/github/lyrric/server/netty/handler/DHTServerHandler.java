@@ -57,7 +57,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private AtomicInteger findPeerNum = new AtomicInteger(0);
 	private AtomicInteger announceNum = new AtomicInteger(0);
 
-	private ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+	private ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 	public final UniqueBlockingQueue NODES_QUEUE = new UniqueBlockingQueue();
 
