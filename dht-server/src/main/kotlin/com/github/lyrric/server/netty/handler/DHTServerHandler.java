@@ -52,6 +52,10 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private InfoHashListMapper infoHashListMapper;
 
 	private AtomicInteger connectNum = new AtomicInteger(0);
+	private AtomicInteger pingNum = new AtomicInteger(0);
+	private AtomicInteger findNodeNum = new AtomicInteger(0);
+	private AtomicInteger findPeerNum = new AtomicInteger(0);
+	private AtomicInteger announceNum = new AtomicInteger(0);
 
 	private ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
@@ -106,15 +110,31 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		//log.info("on query, query name is {}", q);
 		switch (q) {
 			case "ping"://ping Query = {"t":"aa", "y":"q", "q":"ping", "a":{"id":"发送者ID"}}
+				pingNum.incrementAndGet();
+				if(pingNum.get() % 1000 == 0){
+					log.info("ping num；{}", pingNum.get());
+				}
 				responsePing(t, (byte[]) a.get("id"), sender);
 				break;
 			case "find_node"://find_node Query = {"t":"aa", "y":"q", "q":"find_node", "a": {"id":"abcdefghij0123456789", "target":"mnopqrstuvwxyz123456"}}
+				findNodeNum.incrementAndGet();
+				if(findNodeNum.get() % 1000 == 0){
+					log.info("find_node num；{}", findNodeNum.get());
+				}
 				responseFindNode(t, (byte[]) a.get("id"), sender);
 				break;
 			case "get_peers"://get_peers Query = {"t":"aa", "y":"q", "q":"get_peers", "a": {"id":"abcdefghij0123456789", "info_hash":"mnopqrstuvwxyz123456"}}
+				findPeerNum.incrementAndGet();
+				if(findPeerNum.get() % 1000 == 0){
+					log.info("get_peers num；{}", findPeerNum.get());
+				}
 				responseGetPeers(t, (byte[]) a.get("info_hash"), sender);
 				break;
 			case "announce_peer"://announce_peers Query = {"t":"aa", "y":"q", "q":"announce_peer", "a": {"id":"abcdefghij0123456789", "implied_port": 1, "info_hash":"mnopqrstuvwxyz123456", "port": 6881, "token": "aoeusnth"}}
+				announceNum.incrementAndGet();
+				if(announceNum.get() % 1000 == 0){
+					log.info("announce_peer ；{}", announceNum.get());
+				}
 				responseAnnouncePeer(t, a, sender);
 				break;
 		}
@@ -292,7 +312,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		for (int i = 0; i < nodes.length; i += 26) {
 			try {
 				//limit the node queue size
-				log.info("NODES_QUEUE size is {}", NODES_QUEUE.size());
 				if (NODES_QUEUE.size() > 3000)
 					return;
 				InetAddress ip = InetAddress.getByAddress(new byte[]{nodes[i + 20], nodes[i + 21], nodes[i + 22], nodes[i + 23]});
