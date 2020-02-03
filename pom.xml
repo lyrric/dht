@@ -19,6 +19,7 @@
         <module>dht-server</module>
         <module>dht-download</module>
         <module>dht-common</module>
+        <module>dht-web</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

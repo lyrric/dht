@@ -1,6 +1,5 @@
 package com.github.lyrric.server.model
 
-import lombok.Data
 import java.net.InetSocketAddress
 
 /***

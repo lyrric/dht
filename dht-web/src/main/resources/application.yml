@@ -1,15 +1,5 @@
 server:
-  port: 8766
-## netty服务器端口
-netty:
-  udp:
-    port: 6688
-  so:
-    rcvbuf: 1048576 #1g
-    sndbuf: 65536
-
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  port: 8089
 
 spring:
   datasource:
@@ -24,22 +14,12 @@ spring:
       connection-test-query: select 1
       max-lifetime: 30000
       connection-init-sql: SELECT 1
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    jedis:
-      pool:
-        max-idle: 8
-        min-idle: 0
-        max-active: 8
-        max-wait: -1ms
-    password:
   application:
-    name: dht-server
-
-
-
+    name: dht-web
 
 logging:
   level:
     root: info
+
+mybatis:
+  mapper-locations:  classpath:mapper/*.xml

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.lyrric.web.mapper.TorrentStatMapper">
+  <resultMap id="BaseResultMap" type="com.github.lyrric.web.entity.TorrentStat">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="amount" jdbcType="BIGINT" property="amount" />
+    <result column="increment" jdbcType="INTEGER" property="increment" />
+    <result column="stat_date" jdbcType="DATE" property="statDate" />
+  </resultMap>
+
+  <insert id="stat">
+      INSERT INTO torrent_stat (amount, increment, stat_date) SELECT
+        count(1) amount,
+        count(
+
+            IF (
+                      date(add_time) = date(
+                            DATE_ADD(now(), INTERVAL - 1 DAY)
+                      ),
+                      TRUE,
+                      NULL
+              )
+        ),
+        now() increament
+      FROM
+        torrent
+  </insert>
+</mapper>

@@ -15,7 +15,7 @@ spring:
       max-lifetime: 30000
       connection-init-sql: SELECT 1
   application:
-    name: torrent-download-service
+    name: dht-download
   redis:
     host: 127.0.0.1
     port: 6379
