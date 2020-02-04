@@ -81,7 +81,7 @@ public class DHTServer {
 	public void sendKRPC(DatagramPacket packet) {
 		long time = System.currentTimeMillis()/1000;
 		if(time == now){
-			if(secondSend > 5500){
+			if(secondSend >= 5500){
 				return;
 			}
 			secondSend++;
