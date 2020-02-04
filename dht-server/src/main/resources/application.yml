@@ -8,9 +8,6 @@ netty:
     rcvbuf: 1048576 #1g
     sndbuf: 65536
 
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-
 spring:
   redis:
     host: 127.0.0.1

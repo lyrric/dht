@@ -139,11 +139,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 * @param sender
 	 */
 	private void responseFindNode(byte[] t, byte[] nid, InetSocketAddress sender) {
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		HashMap<String, Object> r = new HashMap<>();
 		r.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, nid));
 		r.put("nodes", new byte[]{});
@@ -175,11 +170,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		r.put("nodes", new byte[]{});
 		r.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, info_hash));
 		DatagramPacket packet = createPacket(t, "r", r, sender);
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		dhtServer.sendKRPC(packet);
 		//log.info("response get_peers[{}]", sender);
 	}
@@ -220,11 +210,10 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			DatagramPacket packet = createPacket(t, "r", r, sender);
 			dhtServer.sendKRPC(packet);
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
-			Boolean exist = redisTemplate.hasKey(KEY_HASH_PREFIX+hashStr);
-			if(exist != null && !exist){
+			Boolean success = redisTemplate.opsForValue().setIfAbsent(KEY_HASH_PREFIX+hashStr, "");
+			if(success != null && success){
 				hashCount.incrementAndGet();
 				//存入redis，过滤
-				redisTemplate.opsForValue().set(KEY_HASH_PREFIX+hashStr, "");
 				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
 				if(hashCount.get() % 1000 == 0){
 					log.info("info hash count:{}", hashCount.get());
