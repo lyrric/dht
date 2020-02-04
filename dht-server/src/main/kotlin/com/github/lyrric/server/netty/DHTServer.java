@@ -83,9 +83,9 @@ public class DHTServer {
 		if(time == now){
 			secondSend++;
 		}else{
+			log.info("本秒共发送:{} 次请求", secondSend);
 			secondSend = 0;
 			now = time;
-			log.info("本秒共发送:{} 次请求", secondSend);
 		}
 		serverChannelFuture.channel().writeAndFlush(packet);
 	}
