@@ -164,13 +164,10 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			return;
 		}
 		String hashStr = new BigInteger(info_hash).toString(16);
-		if(infoHashListMapper.selectCountByHash(hashStr) > 0){
-			return;
-		}
 //		if(infoHashListMapper.selectCount(new BigInteger(info_hash).toString(16)) > 0){
 //			return;
 //		}
-		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16));
+		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr);
 		if (exist != null && exist){
 			//dhtServer.bloomFilter.add(hashStr);
 			return;
