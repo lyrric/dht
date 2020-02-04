@@ -49,7 +49,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Resource(name = "dhtRedisTemplate")
 	private RedisTemplate<String, Object> redisTemplate;
 
-	private ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+	private ExecutorService pool = Executors.newFixedThreadPool(1);
 
 	public final UniqueBlockingQueue NODES_QUEUE = new UniqueBlockingQueue();
 
