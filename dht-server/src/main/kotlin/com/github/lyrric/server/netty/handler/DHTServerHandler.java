@@ -64,7 +64,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		byte[] buff = new byte[packet.content().readableBytes()];
 		packet.content().readBytes(buff);
 
-		pool.execute(() -> {
 			try {
 				Map<String, ?> map = BencodingUtils.decode(buff);
 
@@ -82,7 +81,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				e.printStackTrace();
 			}
 
-		});
 
 	}
 
