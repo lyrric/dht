@@ -33,6 +33,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.github.lyrric.common.constant.RedisConstant.KEY_HASH_PREFIX;
+
 /***
  * 参见 Bittorrent 协议：
  * http://www.bittorrent.org/beps/bep_0005.html
@@ -168,11 +170,11 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 //		if(infoHashListMapper.selectCount(new BigInteger(info_hash).toString(16)) > 0){
 //			return;
 //		}
-//		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16));
-//		if (exist != null && exist){
-//			//dhtServer.bloomFilter.add(hashStr);
-//			return;
-//		}
+		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+new BigInteger(info_hash).toString(16));
+		if (exist != null && exist){
+			//dhtServer.bloomFilter.add(hashStr);
+			return;
+		}
 		HashMap<String, Object> r = new HashMap<>();
 		r.put("token", new byte[]{info_hash[0], info_hash[1]});
 		r.put("nodes", new byte[]{});
@@ -218,21 +220,23 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			DatagramPacket packet = createPacket(t, "r", r, sender);
 			dhtServer.sendKRPC(packet);
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
-			//check exists, if exists then add to bloom filter
-			if(infoHashListMapper.selectCountByHash(hashStr) == 0){
+			Boolean exist = redisTemplate.hasKey(KEY_HASH_PREFIX+hashStr);
+			if(exist != null && !exist){
 				hashCount.incrementAndGet();
+				//存入redis，过滤
+				redisTemplate.opsForValue().set(KEY_HASH_PREFIX+hashStr, "");
 				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
 				if(hashCount.get() % 1000 == 0){
 					log.info("info hash count:{}", hashCount.get());
 				}
-				try {
+				/*try {
 					infoHashListMapper.insert(new InfoHashList().setInfoHashAndReturn(hashStr));
 				}catch (Exception e){
 					//hash冲突报错，不打印日志
 					if(!(e instanceof DuplicateKeyException)){
 						e.printStackTrace();
 					}
-				}
+				}*/
 			}
 //			if ( Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
 //				//放入缓存，下次收到相同种子hash的请求，则不用再记录
