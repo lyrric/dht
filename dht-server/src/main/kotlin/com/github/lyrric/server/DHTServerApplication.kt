@@ -9,10 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import org.springframework.scheduling.annotation.EnableScheduling
-import tk.mybatis.spring.annotation.MapperScan
 
-
-@MapperScan(basePackages = ["com.github.lyrric.server.mapper"])
 @SpringBootApplication
 @EnableScheduling
 class DhtServerApplication{

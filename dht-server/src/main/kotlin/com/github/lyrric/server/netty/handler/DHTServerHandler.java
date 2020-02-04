@@ -5,8 +5,6 @@ import com.github.lyrric.common.entity.DownloadMsgInfo;
 import com.github.lyrric.common.util.ByteUtil;
 import com.github.lyrric.common.util.NodeIdUtil;
 import com.github.lyrric.common.util.bencode.BencodingUtils;
-import com.github.lyrric.server.entity.InfoHashList;
-import com.github.lyrric.server.mapper.InfoHashListMapper;
 import com.github.lyrric.server.model.Node;
 import com.github.lyrric.server.model.UniqueBlockingQueue;
 import com.github.lyrric.server.netty.DHTServer;
@@ -50,8 +48,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private DHTServer dhtServer;
 	@Resource(name = "dhtRedisTemplate")
 	private RedisTemplate<String, Object> redisTemplate;
-	@Resource
-	private InfoHashListMapper infoHashListMapper;
 
 	private ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -143,6 +139,11 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 * @param sender
 	 */
 	private void responseFindNode(byte[] t, byte[] nid, InetSocketAddress sender) {
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		HashMap<String, Object> r = new HashMap<>();
 		r.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, nid));
 		r.put("nodes", new byte[]{});
@@ -164,9 +165,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			return;
 		}
 		String hashStr = new BigInteger(info_hash).toString(16);
-//		if(infoHashListMapper.selectCount(new BigInteger(info_hash).toString(16)) > 0){
-//			return;
-//		}
 		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr);
 		if (exist != null && exist){
 			//dhtServer.bloomFilter.add(hashStr);
@@ -177,6 +175,11 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		r.put("nodes", new byte[]{});
 		r.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, info_hash));
 		DatagramPacket packet = createPacket(t, "r", r, sender);
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		dhtServer.sendKRPC(packet);
 		//log.info("response get_peers[{}]", sender);
 	}
@@ -226,25 +229,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				if(hashCount.get() % 1000 == 0){
 					log.info("info hash count:{}", hashCount.get());
 				}
-				/*try {
-					infoHashListMapper.insert(new InfoHashList().setInfoHashAndReturn(hashStr));
-				}catch (Exception e){
-					//hash冲突报错，不打印日志
-					if(!(e instanceof DuplicateKeyException)){
-						e.printStackTrace();
-					}
-				}*/
 			}
-//			if ( Boolean.FALSE.equals(redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr))) {
-//				//放入缓存，下次收到相同种子hash的请求，则不用再记录
-//				redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PREFIX+hashStr, "");
-//
-//				hashCount.incrementAndGet();
-//				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
-//				if(hashCount.get() % 1000 == 0){
-//					log.info("info hash count:{}", hashCount.get());
-//				}
-//			}
+
 
 		}catch (Exception e){
 			e.printStackTrace();
