@@ -35,9 +35,15 @@ public class DHTServer {
 
 	private ChannelFuture serverChannelFuture;
 
-//	public BloomFilter bloomFilter;
-
 	private String filterSavePath;
+	/**
+	 * 每秒发送了多少次请求
+	 */
+	private long secondSend = 0;
+	/**
+	 * 当前秒
+	 */
+	private long now = System.currentTimeMillis() / 1000;
 
 	/**
 	 * 本机 DHT 节点 ID （根据 IP 生成）
@@ -65,22 +71,7 @@ public class DHTServer {
 		log.info("Starting dht server at " + inetSocketAddress);
 		serverChannelFuture = bootstrap.bind(inetSocketAddress).sync();
 		serverChannelFuture.channel().closeFuture();
-
-		//init bloom filter
-//		bloomFilter = new BloomFilter(10000000);
-//		String path = System.getProperty("java.class.path");
-//		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
-//		int lastIndex = path.lastIndexOf(File.separator) + 1;
-//		filterSavePath = path.substring(firstIndex, lastIndex) + "filter.data";
-//		File file = new File(filterSavePath);
-//		if (file.exists())
-//			BloomFilter.readFilterFromFile(filterSavePath);
 	}
-
-//	@PreDestroy
-//	public void saveBloomFilter() {
-//		bloomFilter.saveFilterToFile(filterSavePath);
-//	}
 
 	/**
 	 * 发送 KRPC 协议数据报文
@@ -88,6 +79,14 @@ public class DHTServer {
 	 * @param packet
 	 */
 	public void sendKRPC(DatagramPacket packet) {
+		long time = System.currentTimeMillis();
+		if(time / 1000 == now){
+			secondSend++;
+		}else{
+			secondSend = 0;
+			now = time;
+			log.info("本秒共发送:{} 次请求", secondSend);
+		}
 		serverChannelFuture.channel().writeAndFlush(packet);
 	}
 }
