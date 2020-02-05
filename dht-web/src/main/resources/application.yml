@@ -2,6 +2,10 @@ server:
   port: 8089
 
 spring:
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,6 +20,12 @@ spring:
       connection-init-sql: SELECT 1
   application:
     name: dht-web
+
+elastic:
+    username:
+    password:
+    host: 127.0.0.1
+    port: 9200
 
 logging:
   level:

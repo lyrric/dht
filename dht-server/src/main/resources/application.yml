@@ -7,7 +7,7 @@ netty:
   so:
     rcvbuf: 1048576 #1g
     sndbuf: 65536
-    send-limit: 5000
+    send-limit: 4500
 
 spring:
   redis:
@@ -16,14 +16,12 @@ spring:
     jedis:
       pool:
         max-idle: 8
-        min-idle: 0
+        min-idle: 1
         max-active: 8
         max-wait: -1ms
     password:
   application:
     name: dht-server
-
-
 
 
 logging:

@@ -22,10 +22,11 @@ spring:
     jedis:
       pool:
         max-idle: 8
-        min-idle: 2
+        min-idle: 1
         max-active: 8
         max-wait: -1ms
     password:
+    timeout: 5000
 
 logging:
   level:

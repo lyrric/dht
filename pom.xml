@@ -62,6 +62,11 @@
     </dependencyManagement>
     <repositories>
         <repository>
+            <id>elasticsearch-releases</id>
+            <name>elasticsearch-releases</name>
+            <url>https://artifacts.elastic.co/maven</url>
+        </repository>
+        <repository>
             <id>nuiton</id>
             <name>Nexus nuiton</name>
             <url>http://maven.nuiton.org/release/</url>

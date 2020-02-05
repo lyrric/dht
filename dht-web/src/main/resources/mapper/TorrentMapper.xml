@@ -16,10 +16,17 @@
     -->
     <result column="files" jdbcType="LONGVARCHAR" property="files" />
   </resultMap>
-  <sql id="Blob_Column_List">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    files
-  </sql>
+  <select id="selectLastDayData" resultMap="ResultMapWithBLOBs">
+    SELECT
+      info_hash,
+      file_name,
+      file_size,
+      add_time,
+      files
+    FROM
+        torrent
+    WHERE
+        add_time >= date('2020-02-05 00:00:00')
+    and add_time &lt; date('2020-02-06 00:00:00')
+  </select>
 </mapper>

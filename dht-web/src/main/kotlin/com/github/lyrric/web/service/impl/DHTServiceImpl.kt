@@ -16,13 +16,4 @@ class DHTServiceImpl:DHTService {
 
     private val log:Logger = LoggerFactory.getLogger(this.javaClass.name)
 
-    /**
-     * 定时任务，每天凌晨00:01运行，统计前一天数据
-     */
-    @Scheduled(cron = "0 1 0 * * ?")
-    fun stat(){
-        log.info("################################ start to stat torrent #################################")
-        torrentStatMapper.stat()
-    }
-
 }
