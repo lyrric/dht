@@ -6,6 +6,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +37,9 @@ public class DHTServer {
 	private ChannelFuture serverChannelFuture;
 
 	private String filterSavePath;
+
+    @Value("${netty.so.send-limit}")
+    private int sendLimit;
 	/**
 	 * 每秒发送了多少次请求
 	 */
@@ -81,7 +85,7 @@ public class DHTServer {
 	public void sendKRPC(DatagramPacket packet) {
 		long time = System.currentTimeMillis()/1000;
 		if(time == now){
-			if(secondSend >= 4500){
+			if(secondSend >= sendLimit){
 				return;
 			}
 			secondSend++;
