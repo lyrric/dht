@@ -302,11 +302,11 @@ public class PeerWireClient {
 			Tree tree = new Tree(null);
 			tree.createTree(nodes);
 			torrent.setFileSize(total);
-			torrent.setFiles(JSONUtil.toJSONString(tree));
+			torrent.setFiles(JSONUtil.toJSONString(tree.leafList()));
 			if (types.size() <= 0)
 				types.add("其他");
 			String sType = String.join(",", types);
-			if (sType != null && !"".equals(sType)) {
+			if (!"".equals(sType)) {
 				torrent.setFileType(sType);
 			}
 		} else {
