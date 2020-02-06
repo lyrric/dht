@@ -1,5 +1,6 @@
 package com.github.lyrric.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -8,10 +9,13 @@ import java.util.List;
 @Data
 public class Node {
 
+	@JsonIgnore
 	private int nid; // 父亲id
+	@JsonIgnore
 	private int pid;
 	private String filename = "";
 	private Long filesize;
+	@JsonIgnore
 	private int index;
 
 	private List<Node> children;

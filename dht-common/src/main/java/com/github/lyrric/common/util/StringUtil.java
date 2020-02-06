@@ -202,7 +202,7 @@ public class StringUtil {
 		}
 
 		Tree tree = JSONUtil.parseObject(torrent.getFiles(), Tree.class);
-		return tree.getLeafList();
+		return tree.leafList();
 	}
 
 }

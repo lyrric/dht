@@ -1,6 +1,7 @@
 package com.github.lyrric.common.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.lyrric.common.util.FileTypeUtil;
 import com.github.lyrric.common.util.StringUtil;
 import org.springframework.data.annotation.Transient;
@@ -14,7 +15,7 @@ public class Tree {
 
 	@Transient
 	private List<Node> leaves;
-	
+
 	public Tree() {
 		super();
 	}
@@ -22,7 +23,7 @@ public class Tree {
 	public Tree(String text) {
 		root = new Node(0, -1, text, null, -1);
 	}
-	
+
 	public void createTree(List<Node> nodes) {
 		for (Node node : nodes) {
 			//父亲是根节点，直接添加到根节点下面
@@ -36,7 +37,7 @@ public class Tree {
 			}
 		}
 	}
-	
+
 	private Node findParent(Node node, int pid) {
 		Node result = null;
 		for (Node n : node.getChildren()) {
@@ -50,7 +51,7 @@ public class Tree {
 		}
 		return result;
 	}
-	
+
 	public void middlePrint(Node tnode) {
 		if (tnode.getChildren() == null) {
 			return;
@@ -66,7 +67,8 @@ public class Tree {
 	 * @return
 	 */
 	@Transient
-	public List<Node> getLeafList() {
+	@JsonIgnore
+	public List<Node> leafList() {
 		leaves = new ArrayList<>();
 		deep(root);
 		return leaves;
