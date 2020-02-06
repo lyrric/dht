@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.stream.Collectors
+import javax.annotation.PostConstruct
 import javax.annotation.Resource
 
 @Component
@@ -41,17 +42,20 @@ class Task {
      * 定时任务，每天凌晨00:02运行，将前一天的数据同步到es中
      */
     //@Scheduled(cron = "0 2 0 * * ?")
+    //@PostConstruct
     fun syncToEs(){
         log.info("################################ start to save torrent to es #################################")
         var total = 0
         var pageNum = 1
         val pageSize = 100
         while(true){
-            val page: Page<Torrent> = PageHelper.startPage<Torrent>(pageNum++, pageSize).doSelectPage<Torrent> {torrentMapper.selectLastDayData() }
+            PageHelper.startPage<Torrent>(pageNum++, pageSize);
+            val page = torrentMapper.selectLastDayData()
             val data:List<EsTorrent> = page.stream().map { t->EsTorrent(t)}.collect(Collectors.toList())
             total+=data.size
             if(data.isEmpty()) break
             esTorrentRepository.saveAll(data)
+            log.info("save to es, finished count:{}", total)
         }
         log.info("################################ save torrent to es finish , total : {} #################################", total)
     }

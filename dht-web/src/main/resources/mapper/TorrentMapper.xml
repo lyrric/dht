@@ -26,7 +26,6 @@
     FROM
         torrent
     WHERE
-        add_time >= date('2020-02-05 00:00:00')
-    and add_time &lt; date('2020-02-06 00:00:00')
+     add_time &lt; date('2020-02-06 00:00:00')
   </select>
 </mapper>

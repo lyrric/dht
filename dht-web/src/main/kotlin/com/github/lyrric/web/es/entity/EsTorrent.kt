@@ -1,11 +1,10 @@
 package com.github.lyrric.web.es.entity
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.github.lyrric.web.constant.EsConstant
 import com.github.lyrric.web.entity.Torrent
-import org.springframework.data.elasticsearch.annotations.DateFormat
-import org.springframework.data.elasticsearch.annotations.Document
-import org.springframework.data.elasticsearch.annotations.Field
-import org.springframework.data.elasticsearch.annotations.FieldType
+import org.springframework.data.elasticsearch.annotations.*
+import org.springframework.format.annotation.DateTimeFormat
 import java.util.*
 import javax.persistence.Id
 
@@ -43,12 +42,13 @@ class EsTorrent{
     /**
      * 入库时间
      */
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd")
+    @Field(type = FieldType.Date)
     var addTime: Date? = null
+
     /**
      * 文件列表
      */
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Keyword, index = false)
     var files: String? = null
         set(files) {
             field = files?.trim { it <= ' ' }

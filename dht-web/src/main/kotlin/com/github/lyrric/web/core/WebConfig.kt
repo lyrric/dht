@@ -54,6 +54,7 @@ class WebConfig {
     fun restHighLevelClient(): RestHighLevelClient? {
         val clientConfiguration: ClientConfiguration = ClientConfiguration.builder()
                 .connectedTo("${host}:${port}")
+                .withSocketTimeout(1000*60)
                 .withBasicAuth(username, password)
                 .build();
 

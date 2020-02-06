@@ -18,5 +18,6 @@ class EsService {
 
     @PostConstruct
     fun test(){
+     elasticsearchRestTemplate.indexOperations.putMapping(EsTorrent::class.java)
     }
 }

@@ -9,14 +9,13 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/dht?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://122.51.84.22:3306/dht?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
     username: dht
     password:
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
       connection-test-query: select 1
-      max-lifetime: 30000
       connection-init-sql: SELECT 1
   application:
     name: dht-web
@@ -30,6 +29,6 @@ elastic:
 logging:
   level:
     root: info
-
+    com.github.lyrric.web.mapper: debug
 mybatis:
   mapper-locations:  classpath:mapper/*.xml
