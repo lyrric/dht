@@ -50,22 +50,22 @@ class WebConfig {
                 .build()
     }
 
-    @Bean
-    fun restHighLevelClient(): RestHighLevelClient? {
-        val clientConfiguration: ClientConfiguration = ClientConfiguration.builder()
-                .connectedTo("${host}:${port}")
-                .withSocketTimeout(1000*60)
-                .withBasicAuth(username, password)
-                .build();
-
-        return RestClients.create(clientConfiguration).rest();
-
-
-    }
-
-    @Bean(name = ["elasticsearchTemplate"])
-    @Autowired
-    fun elasticsearchRestTemplate(restHighLevelClient: RestHighLevelClient):ElasticsearchRestTemplate{
-        return ElasticsearchRestTemplate(restHighLevelClient)
-    }
+//    @Bean
+//    fun restHighLevelClient(): RestHighLevelClient? {
+//        val clientConfiguration: ClientConfiguration = ClientConfiguration.builder()
+//                .connectedTo("${host}:${port}")
+//                .withSocketTimeout(1000*60)
+//                .withBasicAuth(username, password)
+//                .build();
+//
+//        return RestClients.create(clientConfiguration).rest();
+//
+//
+//    }
+//
+//    @Bean(name = ["elasticsearchTemplate"])
+//    @Autowired
+//    fun elasticsearchRestTemplate(restHighLevelClient: RestHighLevelClient):ElasticsearchRestTemplate{
+//        return ElasticsearchRestTemplate(restHighLevelClient)
+//    }
 }

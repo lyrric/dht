@@ -2,6 +2,7 @@ package com.github.lyrric.common.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.lyrric.common.util.FileTypeUtil;
 import com.github.lyrric.common.util.StringUtil;
 import org.springframework.data.annotation.Transient;
@@ -9,11 +10,13 @@ import org.springframework.data.annotation.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Tree {
 
 	private Node root;
 
 	@Transient
+	@JsonIgnore
 	private List<Node> leaves;
 
 	public Tree() {

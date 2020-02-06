@@ -109,6 +109,11 @@
 			<artifactId>x-pack-transport</artifactId>
 			<version>${elasticsearch.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.lyrric</groupId>
+			<artifactId>dht-common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 

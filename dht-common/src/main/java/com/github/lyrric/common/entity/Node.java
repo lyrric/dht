@@ -13,6 +13,7 @@ public class Node {
 	private int nid; // 父亲id
 	@JsonIgnore
 	private int pid;
+
 	private String filename = "";
 	private Long filesize;
 	@JsonIgnore
