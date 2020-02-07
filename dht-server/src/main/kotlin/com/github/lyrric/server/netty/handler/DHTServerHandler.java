@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.github.lyrric.common.constant.RedisConstant.KEY_HASH_PREFIX;
@@ -208,7 +209,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			DatagramPacket packet = createPacket(t, "r", r, sender);
 			dhtServer.sendKRPC(packet);
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
-			Boolean success = redisTemplate.opsForValue().setIfAbsent(KEY_HASH_PREFIX+hashStr, "");
+			Boolean success = redisTemplate.opsForValue().setIfAbsent(KEY_HASH_PREFIX+hashStr, "",30, TimeUnit.MINUTES);
 			if(success != null && success){
 				hashCount.incrementAndGet();
 				//存入redis，过滤
