@@ -18,7 +18,7 @@ public class Node {
 	private Long filesize;
 	@JsonIgnore
 	private int index;
-
+	@JsonIgnore
 	private List<Node> children;
 	
 	public void addChild(Node node) {
