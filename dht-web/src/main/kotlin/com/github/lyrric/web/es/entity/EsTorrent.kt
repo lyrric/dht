@@ -1,15 +1,19 @@
 package com.github.lyrric.web.es.entity
 
-import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.lyrric.web.constant.EsConstant
 import com.github.lyrric.web.entity.Torrent
-import org.springframework.data.elasticsearch.annotations.*
-import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.data.elasticsearch.annotations.Document
+import org.springframework.data.elasticsearch.annotations.Field
+import org.springframework.data.elasticsearch.annotations.FieldType
 import java.util.*
 import javax.persistence.Id
 
 
-@Document(indexName = EsConstant.INDEX, type = "torrent")
+@Document(indexName = EsConstant.TORRENT_INDEX)
 class EsTorrent{
 
     /**
@@ -45,19 +49,15 @@ class EsTorrent{
     @Field(type = FieldType.Date)
     var addTime: Date? = null
 
-    /**
-     * 文件列表
-     */
-    @Field(type = FieldType.Keyword, index = false)
-    var files: String? = null
-        set(files) {
-            field = files?.trim { it <= ' ' }
-        }
+
     /**
      * 被点击次数
      */
     @Field(type = FieldType.Long)
     var hot:Long? = null
+
+    @Field(type = FieldType.Nested)
+    var files:List<TorrentFile>? = null
 
     constructor()
 
@@ -66,7 +66,20 @@ class EsTorrent{
         this.fileName = torrent.fileName
         this.fileSize = torrent.fileSize
         this.addTime = torrent.addTime
-        this.files = torrent.files
+        if(torrent.files != null){
+            this.files = ObjectMapper().readValue(torrent.files, object : TypeReference<List<TorrentFile>?>() {})
+        }
         this.hot = 0
     }
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+class TorrentFile{
+    @Field(type = FieldType.Keyword, index = false)
+    @JsonAlias("fileName")
+    var subFileName:String?= null
+
+    @Field(type = FieldType.Long, index = false)
+    @JsonAlias("fileSize")
+    var subFileSize:Long? = null
 }

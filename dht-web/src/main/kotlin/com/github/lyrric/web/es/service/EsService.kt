@@ -1,20 +1,41 @@
-//package com.github.lyrric.web.es.service
-//
-//import com.github.lyrric.web.es.entity.EsTorrent
-//import com.github.lyrric.web.es.repository.EsTorrentRepository
-//import org.elasticsearch.client.RestHighLevelClient
-//import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
-//import org.springframework.stereotype.Service
-//import javax.annotation.PostConstruct
-//import javax.annotation.Resource
-//
-//@Service
-//class EsService {
-//
-////    @Resource
-////    private lateinit var elasticsearchRestTemplate: ElasticsearchRestTemplate
-////    @Resource
-////    private lateinit var esTorrentRepository: EsTorrentRepository
-//
-//
-//}
+package com.github.lyrric.web.es.service
+
+import com.github.lyrric.web.constant.EsConstant
+import com.github.lyrric.web.es.entity.EsTorrent
+import com.github.lyrric.web.es.repository.EsTorrentRepository
+import com.github.lyrric.web.model.PageResult
+import com.github.lyrric.web.model.dto.SearchDTO
+import org.elasticsearch.index.query.QueryBuilders
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
+import org.springframework.stereotype.Component
+import java.util.stream.Collectors
+import javax.annotation.Resource
+
+@Component
+class EsService {
+
+    @Resource
+    private lateinit var elasticsearchRestTemplate: ElasticsearchRestTemplate
+    @Resource
+    private lateinit var esTorrentRepository: EsTorrentRepository
+
+
+    fun search(searchDTO: SearchDTO):PageResult<EsTorrent>{
+        val index = IndexCoordinates.of(EsConstant.TORRENT_INDEX)
+        val query = NativeSearchQueryBuilder()
+                    .withQuery(QueryBuilders
+                            .boolQuery()
+                            .must(QueryBuilders.matchQuery("fileName", searchDTO.key)))
+                            .withPageable(PageRequest.of(searchDTO.pageNum!!,searchDTO.pageSize!!))
+                            .build()
+        val searchHits = elasticsearchRestTemplate.search(query, EsTorrent::class.java, index)
+        val pageResult = PageResult<EsTorrent>()
+        pageResult.total = searchHits.totalHits
+        pageResult.data = searchHits.stream().map { t -> t.content }.collect(Collectors.toList())
+        searchHits.stream().forEach { t-> run { pageResult.data?.add(t.content) } }
+        return pageResult
+    }
+}

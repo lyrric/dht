@@ -12,19 +12,26 @@
 
   <insert id="stat">
       INSERT INTO torrent_stat (amount, increment, stat_date) SELECT
-        count(1) amount,
-        count(
-
-            IF (
-                      date(add_time) = date(
-                            DATE_ADD(now(), INTERVAL - 1 DAY)
-                      ),
-                      TRUE,
-                      NULL
+          count(
+              IF (
+                  date(add_time) &lt;= date(
+                  DATE_ADD(now(), INTERVAL - 1 DAY)
+                  ),
+                  TRUE,
+                  NULL
               )
-        ),
-        now() increament
+          ) amount,
+          count(
+          IF (
+                  date(add_time) = date(
+                      DATE_ADD(now(), INTERVAL - 1 DAY)
+                  ),
+                  TRUE,
+                  NULL
+              )
+          ) increament,
+          now() stat_date
       FROM
-        torrent
+      torrent
   </insert>
 </mapper>

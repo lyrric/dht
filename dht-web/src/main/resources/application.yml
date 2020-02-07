@@ -17,6 +17,17 @@ spring:
       minimum-idle: 5
       connection-test-query: select 1
       connection-init-sql: SELECT 1
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 1
+        max-active: 8
+        max-wait: -1ms
+    password:
+    database: 1
   application:
     name: dht-web
 

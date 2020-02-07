@@ -1,11 +1,6 @@
 package com.github.lyrric.web.core
 
-import org.elasticsearch.client.RestClientBuilder
 import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.client.transport.TransportClient
-import org.elasticsearch.common.settings.Settings
-import org.elasticsearch.common.transport.TransportAddress
-import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -13,14 +8,12 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.elasticsearch.client.ClientConfiguration
 import org.springframework.data.elasticsearch.client.RestClients
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate
 import springfox.documentation.builders.ApiInfoBuilder
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.swagger2.annotations.EnableSwagger2
-import java.net.InetAddress
 
 
 /**
@@ -50,22 +43,22 @@ class WebConfig {
                 .build()
     }
 
-//    @Bean
-//    fun restHighLevelClient(): RestHighLevelClient? {
-//        val clientConfiguration: ClientConfiguration = ClientConfiguration.builder()
-//                .connectedTo("${host}:${port}")
-//                .withSocketTimeout(1000*60)
-//                .withBasicAuth(username, password)
-//                .build();
-//
-//        return RestClients.create(clientConfiguration).rest();
-//
-//
-//    }
-//
-//    @Bean(name = ["elasticsearchTemplate"])
-//    @Autowired
-//    fun elasticsearchRestTemplate(restHighLevelClient: RestHighLevelClient):ElasticsearchRestTemplate{
-//        return ElasticsearchRestTemplate(restHighLevelClient)
-//    }
+    @Bean
+    fun restHighLevelClient(): RestHighLevelClient? {
+        val clientConfiguration: ClientConfiguration = ClientConfiguration.builder()
+                .connectedTo("${host}:${port}")
+                .withSocketTimeout(1000*60)
+                .withBasicAuth(username, password)
+                .build();
+
+        return RestClients.create(clientConfiguration).rest();
+
+
+    }
+
+    @Bean(name = ["elasticsearchTemplate"])
+    @Autowired
+    fun elasticsearchRestTemplate(restHighLevelClient: RestHighLevelClient):ElasticsearchRestTemplate{
+        return ElasticsearchRestTemplate(restHighLevelClient)
+    }
 }

@@ -5,6 +5,6 @@ class EsConstant {
         /**
          * es 索引
          */
-        const val INDEX:String = "dht_torrent";
+        const val TORRENT_INDEX:String = "dht_torrent"
     }
 }

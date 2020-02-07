@@ -26,6 +26,10 @@
     FROM
         torrent
     WHERE
-     add_time &lt; date('2020-02-06 00:00:00')
+        date(add_time) = date(
+              DATE_ADD(now(), INTERVAL - 1 DAY)
+        )
+    order by id
+    limit #{offset},#{pageSize}
   </select>
 </mapper>

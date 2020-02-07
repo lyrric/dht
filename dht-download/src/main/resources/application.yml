@@ -14,19 +14,17 @@ spring:
       connection-test-query: select 1
       max-lifetime: 30000
       connection-init-sql: SELECT 1
-  application:
-    name: dht-download
   redis:
     host: 127.0.0.1
     port: 6379
     jedis:
       pool:
         max-idle: 8
-        min-idle: 1
+        min-idle: 0
         max-active: 8
         max-wait: -1ms
     password:
-    timeout: 5000
+    timeout: 50000
 
 logging:
   level:
