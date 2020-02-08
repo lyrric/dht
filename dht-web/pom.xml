@@ -114,16 +114,6 @@
 			<url>https://artifacts.elastic.co/maven</url>
 		</repository>
 	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<url>https://repo.spring.io/snapshot</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<url>https://repo.spring.io/milestone</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<build>
 		<finalName>dht-web</finalName>
 		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>

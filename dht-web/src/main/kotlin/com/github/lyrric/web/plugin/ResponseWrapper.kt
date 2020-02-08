@@ -25,7 +25,8 @@ class ResponseWrapper : ResponseBodyAdvice<Any>{
                                  aClass: Class<out HttpMessageConverter<*>>, serverHttpRequest: ServerHttpRequest,
                                  serverHttpResponse: ServerHttpResponse): Any? {
         val path = serverHttpRequest.uri.path
-        if("/swagger-resources" == path || "/v2/api-docs" == path)
+        if(path.startsWith("/swagger-resources")
+                || path.startsWith("/v2/api-docs") )
             return o
         if(o is  String){
             return objectMapper.writeValueAsString(HttpResult.success(o))
