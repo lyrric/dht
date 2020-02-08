@@ -209,7 +209,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			DatagramPacket packet = createPacket(t, "r", r, sender);
 			dhtServer.sendKRPC(packet);
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
-			Boolean success = redisTemplate.opsForValue().setIfAbsent(KEY_HASH_PREFIX+hashStr, "",30, TimeUnit.MINUTES);
+			Boolean success = redisTemplate.opsForValue().setIfAbsent(KEY_HASH_PREFIX+hashStr, "",3, TimeUnit.HOURS);
 			if(success != null && success){
 				hashCount.incrementAndGet();
 				//存入redis，过滤
