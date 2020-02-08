@@ -26,10 +26,13 @@ class APIController{
      */
     @PostMapping(value = ["/search"])
     fun search(@RequestBody searchDTO: SearchDTO, httpRequest: HttpServletRequest): PageResult<EsTorrent> {
-        if(searchDTO.key == null || searchDTO.key!!.length < 3){
-            throw BusinessException("搜索关键字不能小于3个字符")
+        if(searchDTO.key == null || searchDTO.key!!.length < 2){
+            throw BusinessException("搜索关键字不能小于2个字符")
         }
-
+        if(searchDTO.pageNum == null || searchDTO.pageNum!! !in 1..10){
+            searchDTO.pageNum = 1
+        }
+        searchDTO.pageSize = 20
         return dhtService.search(searchDTO, httpRequest)
     }
 

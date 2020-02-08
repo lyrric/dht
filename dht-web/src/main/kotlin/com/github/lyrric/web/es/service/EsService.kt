@@ -6,6 +6,8 @@ import com.github.lyrric.web.es.repository.EsTorrentRepository
 import com.github.lyrric.web.model.PageResult
 import com.github.lyrric.web.model.dto.SearchDTO
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.sort.SortBuilders
+import org.elasticsearch.search.sort.SortMode
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
@@ -34,6 +36,9 @@ class EsService {
         val searchHits = elasticsearchRestTemplate.search(query, EsTorrent::class.java, index)
         val pageResult = PageResult<EsTorrent>()
         pageResult.total = searchHits.totalHits
+        if(pageResult.total!! > 200L){
+            pageResult.total = 200L
+        }
         pageResult.data = searchHits.stream().map { t -> t.content }.collect(Collectors.toList())
         searchHits.stream().forEach { t-> run { pageResult.data?.add(t.content) } }
         return pageResult

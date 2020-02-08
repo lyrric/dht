@@ -44,7 +44,7 @@ class DHTServiceImpl:DHTService {
         //每个IP每秒只能搜索一次
         val success = stringRedisTemplate
                 .opsForValue()
-                .setIfAbsent(IP_LIMIT_PREFIX+ip, "", Duration.ofMillis(1L))
+                .setIfAbsent(IP_LIMIT_PREFIX+ip, "", Duration.ofSeconds(1L))
         if(success != null && success){
             return esService.search(searchDTO)
         }else{
