@@ -1,5 +1,6 @@
 package com.github.lyrric.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -14,8 +15,10 @@ public class Node {
 	@JsonIgnore
 	private int pid;
 
-	private String filename = "";
-	private Long filesize;
+	@JsonAlias(value = "filename")
+	private String fileName = "";
+	@JsonAlias(value = "filesize")
+	private Long fileSize;
 	@JsonIgnore
 	private int index;
 	@JsonIgnore
@@ -38,12 +41,12 @@ public class Node {
 		this.pid = pid;
 	}
 	
-	public Node(int nid, int pid, String filename, Long filesize, int index) {
+	public Node(int nid, int pid, String fileName, Long fileSize, int index) {
 		super();
 		this.nid = nid;
 		this.pid = pid;
-		this.filename = filename;
-		this.filesize = filesize;
+		this.fileName = fileName;
+		this.fileSize = fileSize;
 		this.index = index;
 	}
 
@@ -51,7 +54,7 @@ public class Node {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((filename == null) ? 0 : filename.hashCode());
+		result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
 		return result;
 	}
 
@@ -64,10 +67,10 @@ public class Node {
 		if (getClass() != obj.getClass())
 			return false;
 		Node other = (Node) obj;
-		if (filename == null) {
-			if (other.filename != null)
+		if (fileName == null) {
+			if (other.fileName != null)
 				return false;
-		} else if (!filename.equals(other.filename))
+		} else if (!fileName.equals(other.fileName))
 			return false;
 		return true;
 	}

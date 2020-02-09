@@ -60,7 +60,7 @@ public class Tree {
 			return;
 		}
 		for (Node node : tnode.getChildren()) {
-			System.out.println(node.getFilename());
+			System.out.println(node.getFileName());
 			middlePrint(node);
 		}
 	}
@@ -93,16 +93,16 @@ public class Tree {
 	public String getHtml(Node tnode) {
 		
 		if (tnode.getChildren() == null) {	//叶子节点
-			return "<li><span class=\"" + FileTypeUtil.getFileType(tnode.getFilename()) + "\">" + tnode.getFilename()
-					+ ((tnode.getFilesize() != null) ? "<small>(" + StringUtil.formatSize(tnode.getFilesize()) + ")" + "</small>" : "")
+			return "<li><span class=\"" + FileTypeUtil.getFileType(tnode.getFileName()) + "\">" + tnode.getFileName()
+					+ ((tnode.getFileSize() != null) ? "<small>(" + StringUtil.formatSize(tnode.getFileSize()) + ")" + "</small>" : "")
 					+ "</span></li>";
 		}
 		
 		String str = "";
 		if (tnode.getNid() == root.getNid()) {	//根节点
-			str += "<ul class=\"filetree treeview\"><p><span class=\"bticon\">" + root.getFilename() + "</span></p>";
+			str += "<ul class=\"filetree treeview\"><p><span class=\"bticon\">" + root.getFileName() + "</span></p>";
 		} else {				//子节点
-			str += "<li class=\"closed\"><span class=\"folder\">" + tnode.getFilename() + "</span><ul>";
+			str += "<li class=\"closed\"><span class=\"folder\">" + tnode.getFileName() + "</span><ul>";
 		}
 		
 		for (Node node : tnode.getChildren()) {

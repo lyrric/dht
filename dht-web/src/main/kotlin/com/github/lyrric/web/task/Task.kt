@@ -47,9 +47,9 @@ class Task {
                 val page = torrentMapper.selectLastDayData(offset, pageSize)
                 val data:List<EsTorrent> = page.stream().map { t->EsTorrent(t)}.collect(Collectors.toList())
                 if(data.isEmpty()) break
+                offset+=pageSize
                 esTorrentRepository.saveAll(data)
                 total+=data.size
-                offset+=pageSize
             }catch (e:Exception){
                 log.warn("################################ save torrent to es error , offset : {} #################################", offset)
             }
