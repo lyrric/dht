@@ -36,7 +36,7 @@ class Task {
     /**
      * 定时任务，每天凌晨00:02运行，将前一天的数据同步到es中
      */
-    @Scheduled(cron = "0 2 0 * * ?")
+    //@Scheduled(cron = "0 2 0 * * ?")
     fun syncToEs(){
         log.info("################################ start to save torrent to es #################################")
         var offset = 0L
