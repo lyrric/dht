@@ -78,13 +78,10 @@ public class Tree {
 	}
 
 	private void deep(Node tnode) {
-		if (tnode.getChildren() == null) {      //叶子节点
-			if (leaves.size() < 3)
-				leaves.add(tnode);
+		if (tnode.getChildren() == null) {
+			leaves.add(tnode);
 			return;
 		}
-		if (leaves.size() >= 3)
-			return;
 		for (Node node : tnode.getChildren()) {
 			deep(node);
 		}
