@@ -40,7 +40,6 @@ class EsService {
             pageResult.total = 200L
         }
         pageResult.data = searchHits.stream().map { t -> t.content }.collect(Collectors.toList())
-        searchHits.stream().forEach { t-> run { pageResult.data?.add(t.content) } }
         return pageResult
     }
 }
