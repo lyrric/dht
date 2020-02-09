@@ -78,6 +78,10 @@ public class Tree {
 	}
 
 	private void deep(Node tnode) {
+	    if(leaves.size() > 20){
+	        //大于20个就不保存了
+            return ;
+        }
 		if (tnode.getChildren() == null) {
 			leaves.add(tnode);
 			return;
