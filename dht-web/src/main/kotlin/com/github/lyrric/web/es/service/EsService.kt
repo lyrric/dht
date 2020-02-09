@@ -36,8 +36,9 @@ class EsService {
         val searchHits = elasticsearchRestTemplate.search(query, EsTorrent::class.java, index)
         val pageResult = PageResult<EsTorrent>()
         pageResult.total = searchHits.totalHits
-        if(pageResult.total!! > 200L){
-            pageResult.total = 200L
+        val max = (searchDTO.pageSize!! * 20).toLong()
+        if(pageResult.total!! > max){
+            pageResult.total = max
         }
         pageResult.data = searchHits.stream().map { t -> t.content }.collect(Collectors.toList())
         return pageResult
