@@ -8,4 +8,5 @@ import javax.servlet.http.HttpServletRequest
 interface DHTService {
 
     fun search(searchDTO: SearchDTO, httpRequest: HttpServletRequest): PageResult<EsTorrent>
+    fun addHot(id: String, httpServletRequest: HttpServletRequest)
 }

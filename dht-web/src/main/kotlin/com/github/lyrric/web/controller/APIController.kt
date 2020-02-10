@@ -7,10 +7,7 @@ import com.github.lyrric.web.model.dto.SearchDTO
 import com.github.lyrric.web.service.DHTService
 import com.github.pagehelper.PageInfo
 import org.apache.commons.lang3.StringUtils
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletRequest
 
@@ -36,5 +33,15 @@ class APIController{
         return dhtService.search(searchDTO, httpRequest)
     }
 
+    /**
+     * 用户点击了下载，则把hot+1
+     */
+    @GetMapping(value = ["/hot"])
+    fun addHot(id: String, httpServletRequest: HttpServletRequest){
+        if(StringUtils.isEmpty(id)){
+            throw BusinessException("参数错误")
+        }
+        dhtService.addHot(id, httpServletRequest)
+    }
 
 }

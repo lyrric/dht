@@ -9,10 +9,12 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortBuilders
 import org.elasticsearch.search.sort.SortMode
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
 import org.springframework.stereotype.Component
+import java.util.function.Consumer
 import java.util.stream.Collectors
 import javax.annotation.Resource
 
@@ -21,6 +23,8 @@ class EsService {
 
     @Resource
     private lateinit var elasticsearchRestTemplate: ElasticsearchRestTemplate
+    @Resource
+    private lateinit var elasticsearchOperations : ElasticsearchOperations
     @Resource
     private lateinit var esTorrentRepository: EsTorrentRepository
 
@@ -42,5 +46,12 @@ class EsService {
         }
         pageResult.data = searchHits.stream().map { t -> t.content }.collect(Collectors.toList())
         return pageResult
+    }
+
+    fun addHost(id: String){
+        esTorrentRepository.findById(id).ifPresent(Consumer { torrent->run{
+            torrent.hot = torrent.hot?.plus(1)
+            esTorrentRepository.save(torrent)
+        }})
     }
 }

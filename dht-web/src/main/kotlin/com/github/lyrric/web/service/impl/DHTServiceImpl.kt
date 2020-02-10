@@ -37,7 +37,21 @@ class DHTServiceImpl:DHTService {
     private val log:Logger = LoggerFactory.getLogger(this.javaClass.name)
 
     override fun search(searchDTO: SearchDTO, httpRequest: HttpServletRequest): PageResult<EsTorrent> {
-        val ip = getRequestIP(httpRequest)
+        limit("search", httpRequest)
+        return esService.search(searchDTO)
+    }
+
+    override fun addHot(id: String, httpServletRequest: HttpServletRequest) {
+        limit("addHot",  httpServletRequest)
+        esService.addHost(id)
+    }
+
+
+    /**
+     * 限制接口调用间隔一秒钟
+     */
+    private fun limit(type: String, request: HttpServletRequest){
+        val ip = getRequestIP(request)
         if(StringUtils.isEmpty(ip)){
             throw BusinessException("无效的请求")
         }
@@ -45,12 +59,11 @@ class DHTServiceImpl:DHTService {
         val success = stringRedisTemplate
                 .opsForValue()
                 .setIfAbsent(IP_LIMIT_PREFIX+ip, "", Duration.ofSeconds(1L))
-        if(success != null && success){
-            return esService.search(searchDTO)
-        }else{
+        if(success == null || !success){
             throw BusinessException("每秒只能搜索一次")
         }
     }
+
 
     /**
      * 获取请求IP
