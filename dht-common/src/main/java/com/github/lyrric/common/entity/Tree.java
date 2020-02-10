@@ -80,6 +80,7 @@ public class Tree {
 	private void deep(Node tnode) {
 	    if(leaves.size() > 20){
 	        //大于20个就不保存了
+			//避免数据太大，引起异常
             return ;
         }
 		if (tnode.getChildren() == null) {
