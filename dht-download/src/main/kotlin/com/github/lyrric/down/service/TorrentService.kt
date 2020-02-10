@@ -17,8 +17,10 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import tk.mybatis.mapper.weekend.Weekend
 import java.sql.SQLIntegrityConstraintViolationException
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.annotation.Resource
@@ -82,6 +84,7 @@ class TorrentService {
     private fun saveBTSync(torrent: Torrent){
         try {
             torrentMapper.insert(torrent)
+            dhtRedisTemplate.expire(RedisConstant.KEY_HASH_INFO+torrent.infoHash, 0, TimeUnit.SECONDS);
             if(i % 50 == 0){
                 log.info("-------------------------------save 50 torrent to db total:{}", i)
             }
