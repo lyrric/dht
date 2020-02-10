@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -27,7 +28,7 @@ class DHTServiceImpl:DHTService {
     @Resource
     private lateinit var torrentMapper: TorrentMapper
     @Resource
-    private lateinit var stringRedisTemplate: StringRedisTemplate
+    private lateinit var redisTemplate: RedisTemplate<String, Long>
     @Resource
     private lateinit var esService: EsService
 
@@ -56,11 +57,14 @@ class DHTServiceImpl:DHTService {
             throw BusinessException("无效的请求")
         }
         //每个IP每秒只能搜索一次
-        val success = stringRedisTemplate
+        val lastTime = redisTemplate
                 .opsForValue()
-                .setIfAbsent(IP_LIMIT_PREFIX+ip, "", Duration.ofSeconds(1L))
-        if(success == null || !success){
-            throw BusinessException("每秒只能搜索一次")
+                .get(IP_LIMIT_PREFIX+ip)
+        val now = System.currentTimeMillis()
+        if(lastTime == null || lastTime < now-500){
+            redisTemplate.opsForValue().set(IP_LIMIT_PREFIX+ip, now, Duration.ofSeconds(1))
+        }else{
+            throw BusinessException("每秒只能搜索两次次")
         }
     }
 
