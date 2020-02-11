@@ -50,7 +50,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Resource(name = "dhtRedisTemplate")
 	private RedisTemplate<String, Object> redisTemplate;
 
-	private ExecutorService pool = Executors.newFixedThreadPool(1);
+	private ExecutorService pool = Executors.newFixedThreadPool(2);
 
 	public final UniqueBlockingQueue NODES_QUEUE = new UniqueBlockingQueue();
 
@@ -64,7 +64,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 		byte[] buff = new byte[packet.content().readableBytes()];
 		packet.content().readBytes(buff);
-
+		pool.submit(() -> {
 			try {
 				Map<String, ?> map = BencodingUtils.decode(buff);
 
@@ -81,6 +81,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			}catch (Exception e){
 				e.printStackTrace();
 			}
+		});
+
 
 
 	}
@@ -127,7 +129,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		r.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, nid));
 		DatagramPacket packet = createPacket(t, "r", r, sender);
 		dhtServer.sendKRPC(packet);
-		//log.info("response ping[{}]", sender);
 	}
 
 	/**
@@ -143,7 +144,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		r.put("nodes", new byte[]{});
 		DatagramPacket packet = createPacket(t, "r", r, sender);
 		dhtServer.sendKRPC(packet);
-		//log.info("response find_node[{}]", sender);
 	}
 
 	/**
@@ -170,7 +170,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		r.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, info_hash));
 		DatagramPacket packet = createPacket(t, "r", r, sender);
 		dhtServer.sendKRPC(packet);
-		//log.info("response get_peers[{}]", sender);
 	}
 
 	/**
@@ -208,6 +207,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			r.put("id", nodeId);
 			DatagramPacket packet = createPacket(t, "r", r, sender);
 			dhtServer.sendKRPC(packet);
+			redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
 			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
 			Boolean success = redisTemplate.opsForValue().setIfAbsent(KEY_HASH_PREFIX+hashStr, "",12, TimeUnit.HOURS);
 			if(success != null && success){

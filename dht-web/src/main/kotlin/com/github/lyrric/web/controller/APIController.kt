@@ -5,9 +5,11 @@ import com.github.lyrric.web.model.BusinessException
 import com.github.lyrric.web.model.PageResult
 import com.github.lyrric.web.model.dto.SearchDTO
 import com.github.lyrric.web.service.DHTService
-import com.github.pagehelper.PageInfo
 import org.apache.commons.lang3.StringUtils
+import org.springframework.util.ResourceUtils
 import org.springframework.web.bind.annotation.*
+import java.io.File
+import java.net.URL
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletRequest
 
@@ -44,4 +46,20 @@ class APIController{
         dhtService.addHot(id, httpServletRequest)
     }
 
+    /**
+     * 获取APP最新版本号
+     */
+    @GetMapping(value = ["app/version"])
+    fun getAPPLatestVersion():String?{
+        val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parent
+        val list = File(path).list() ?: return null
+        for(fileName in list){
+            //app-0.1.apk
+            if(fileName.endsWith("apk")){
+                return fileName.replace("app-", "").replace(".apk", "");
+            }
+        }
+        return null
+
+    }
 }

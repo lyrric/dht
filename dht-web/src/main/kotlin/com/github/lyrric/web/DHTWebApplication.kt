@@ -11,8 +11,8 @@ import tk.mybatis.spring.annotation.MapperScan
 @SpringBootApplication
 @EnableScheduling
 @EnableElasticsearchRepositories(basePackages = ["com.github.lyrric.web.es.repository"])
-class Application
+class DHTWebApplication
 
 fun main(args: Array<String>) {
-	runApplication<Application>(*args)
+	runApplication<DHTWebApplication>(*args)
 }
