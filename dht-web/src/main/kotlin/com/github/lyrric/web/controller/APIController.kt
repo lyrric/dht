@@ -76,6 +76,7 @@ class APIController{
     @GetMapping(value = ["app/download"])
     fun downApp(httpResponse: HttpServletResponse){
         httpResponse.contentType = "application/octet-stream"
+        httpResponse.setHeader("Content-Disposition","attachment;filename=app.apk")
         val home = ApplicationHome(javaClass)
         val jarFile = home.source
         val path = jarFile.parentFile.canonicalPath
