@@ -28,9 +28,6 @@ class ResponseWrapper : ResponseBodyAdvice<Any>{
         if(path.startsWith("/swagger-resources")
                 || path.startsWith("/v2/api-docs") )
             return o
-        if(o == null){
-            return HttpResult.success(null);
-        }
         if(o is String){
             return objectMapper.writeValueAsString(HttpResult.success(o))
         }

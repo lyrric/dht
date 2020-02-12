@@ -85,7 +85,7 @@ class APIController{
             //app-0.1.apk
             if(file.name.endsWith(".apk")){
                 IOUtils.copy(file.inputStream(), httpResponse.outputStream)
-
+                return
             }
         }
     }
