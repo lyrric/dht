@@ -60,6 +60,7 @@ class APIController{
     @GetMapping(value = ["app/version"])
     fun getAPPLatestVersion():String?{
         val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parent
+        log.info("path = $path")
         val list = File(path).list() ?: return null
         for(fileName in list){
             //app-0.1.apk
