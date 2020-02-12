@@ -64,6 +64,7 @@ class APIController{
         val list = File(path).list() ?: return null
         for(fileName in list){
             //app-0.1.apk
+            log.info(fileName)
             if(fileName.endsWith("apk")){
                 log.info("$fileName success")
                 return fileName.replace("app-", "").replace(".apk", "");
