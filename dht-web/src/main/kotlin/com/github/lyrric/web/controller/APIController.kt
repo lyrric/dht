@@ -63,7 +63,6 @@ class APIController{
         val list = File(path).list()
         for(fileName in list){
             //app-0.1.apk
-            log.info(fileName)
             if(fileName.endsWith("apk")){
                 log.info("$fileName success")
                 return fileName.replace("app-", "").replace(".apk", "");
@@ -77,8 +76,10 @@ class APIController{
     @GetMapping(value = ["app/download"])
     fun downApp(httpResponse: HttpServletResponse){
         httpResponse.contentType = "application/octet-stream"
-        val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parent
-        val list = File(path).listFiles();
+        val home = ApplicationHome(javaClass)
+        val jarFile = home.source
+        val path = jarFile.parentFile.canonicalPath
+        val list = File(path).listFiles()
         for(file in list){
             //app-0.1.apk
             if(file.name.endsWith(".apk")){
