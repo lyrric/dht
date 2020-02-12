@@ -59,9 +59,7 @@ class APIController{
     fun getAPPLatestVersion():String?{
         val home = ApplicationHome(javaClass)
         val jarFile = home.source
-        log.info( jarFile.parentFile.canonicalPath)
-        val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parent
-        log.info("path = $path")
+        val path = jarFile.parentFile.canonicalPath
         val list = Paths.get(path).toList()
         for(file in list){
             //app-0.1.apk
