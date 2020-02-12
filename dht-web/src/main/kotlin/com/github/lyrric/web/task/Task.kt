@@ -52,6 +52,7 @@ class Task {
                 total+=data.size
             }catch (e:Exception){
                 log.warn("################################ save torrent to es error , offset : {} #################################", offset)
+                break
             }
 
         }
