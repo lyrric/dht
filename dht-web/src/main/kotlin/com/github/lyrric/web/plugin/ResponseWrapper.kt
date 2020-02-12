@@ -31,7 +31,7 @@ class ResponseWrapper : ResponseBodyAdvice<Any>{
         if(o == null){
             return HttpResult.success(null);
         }
-        if(o is  String){
+        if(o is String){
             return objectMapper.writeValueAsString(HttpResult.success(o))
         }
         return HttpResult.success(o)
