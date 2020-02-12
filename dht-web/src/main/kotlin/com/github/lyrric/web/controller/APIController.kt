@@ -5,13 +5,17 @@ import com.github.lyrric.web.model.BusinessException
 import com.github.lyrric.web.model.PageResult
 import com.github.lyrric.web.model.dto.SearchDTO
 import com.github.lyrric.web.service.DHTService
+import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
+import org.apache.http.HttpResponse
+import org.apache.http.entity.ContentType
 import org.springframework.util.ResourceUtils
 import org.springframework.web.bind.annotation.*
 import java.io.File
 import java.net.URL
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 
 @RestController
@@ -60,6 +64,21 @@ class APIController{
             }
         }
         return null
+    }
+    /**
+     * 下载App
+     */
+    @GetMapping(value = ["app/download"])
+    fun downApp(httpResponse: HttpServletResponse){
+        httpResponse.contentType = "application/octet-stream"
+        val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parent
+        val list = File(path).listFiles();
+        for(file in list){
+            //app-0.1.apk
+            if(file.name.endsWith(".apk")){
+                IOUtils.copy(file.inputStream(), httpResponse.outputStream)
 
+            }
+        }
     }
 }
