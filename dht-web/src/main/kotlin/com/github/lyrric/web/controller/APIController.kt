@@ -7,18 +7,15 @@ import com.github.lyrric.web.model.dto.SearchDTO
 import com.github.lyrric.web.service.DHTService
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
-import org.apache.http.HttpResponse
-import org.apache.http.entity.ContentType
 import org.slf4j.LoggerFactory
+import org.springframework.boot.system.ApplicationHome
 import org.springframework.util.ResourceUtils
 import org.springframework.web.bind.annotation.*
 import java.io.File
-import java.net.URL
 import java.nio.file.Paths
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import kotlin.math.log
 
 
 @RestController
@@ -60,7 +57,10 @@ class APIController{
      */
     @GetMapping(value = ["app/version"])
     fun getAPPLatestVersion():String?{
-        val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parentFile.absolutePath
+        val home = ApplicationHome(javaClass)
+        val jarFile = home.source
+        log.info( jarFile.parentFile.canonicalPath)
+        val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parent
         log.info("path = $path")
         val list = Paths.get(path).toList()
         for(file in list){
