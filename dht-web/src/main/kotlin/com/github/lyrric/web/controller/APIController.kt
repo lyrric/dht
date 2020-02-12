@@ -14,6 +14,7 @@ import org.springframework.util.ResourceUtils
 import org.springframework.web.bind.annotation.*
 import java.io.File
 import java.net.URL
+import java.nio.file.Paths
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -61,9 +62,10 @@ class APIController{
     fun getAPPLatestVersion():String?{
         val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parent
         log.info("path = $path")
-        val list = File(path).list() ?: return null
-        for(fileName in list){
+        val list = Paths.get(path).toList()
+        for(file in list){
             //app-0.1.apk
+            val fileName = file.fileName.toString()
             log.info(fileName)
             if(fileName.endsWith("apk")){
                 log.info("$fileName success")
@@ -88,4 +90,6 @@ class APIController{
             }
         }
     }
+
+    private fun getAppPath(){}
 }
