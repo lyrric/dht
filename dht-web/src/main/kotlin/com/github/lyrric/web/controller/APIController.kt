@@ -60,7 +60,7 @@ class APIController{
      */
     @GetMapping(value = ["app/version"])
     fun getAPPLatestVersion():String?{
-        val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parent
+        val path = File(ResourceUtils.getURL("classpath:").path).parentFile.parentFile.parentFile.absolutePath
         log.info("path = $path")
         val list = Paths.get(path).toList()
         for(file in list){
