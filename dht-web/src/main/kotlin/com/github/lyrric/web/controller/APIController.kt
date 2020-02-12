@@ -60,10 +60,9 @@ class APIController{
         val home = ApplicationHome(javaClass)
         val jarFile = home.source
         val path = jarFile.parentFile.canonicalPath
-        val list = Paths.get(path).toList()
-        for(file in list){
+        val list = File(path).list()
+        for(fileName in list){
             //app-0.1.apk
-            val fileName = file.fileName.toString()
             log.info(fileName)
             if(fileName.endsWith("apk")){
                 log.info("$fileName success")
