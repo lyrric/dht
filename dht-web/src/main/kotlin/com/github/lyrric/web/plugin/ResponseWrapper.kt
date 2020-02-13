@@ -2,6 +2,7 @@ package com.github.lyrric.web.plugin
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.lyrric.web.model.HttpResult
+import org.apache.http.entity.ContentType
 import org.springframework.core.MethodParameter
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
@@ -29,6 +30,7 @@ class ResponseWrapper : ResponseBodyAdvice<Any>{
                 || path.startsWith("/v2/api-docs") )
             return o
         if(o is String){
+            serverHttpResponse.headers.set("content-type", ContentType.APPLICATION_JSON.toString())
             return objectMapper.writeValueAsString(HttpResult.success(o))
         }
         return HttpResult.success(o)
