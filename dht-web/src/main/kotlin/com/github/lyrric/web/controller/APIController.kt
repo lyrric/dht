@@ -84,6 +84,7 @@ class APIController{
         for(file in list){
             //app-0.1.apk
             if(file.name.endsWith(".apk")){
+                httpResponse.setHeader("Content-Length", file.length().toString())
                 IOUtils.copy(file.inputStream(), httpResponse.outputStream)
                 return
             }
