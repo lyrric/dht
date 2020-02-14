@@ -8,6 +8,7 @@ import com.github.lyrric.web.service.DHTService
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.system.ApplicationHome
 import org.springframework.util.ResourceUtils
 import org.springframework.web.bind.annotation.*
@@ -24,6 +25,11 @@ class APIController{
 
     @Resource
     private lateinit var dhtService: DHTService
+    @Value("\${app.latest-version}")
+    private lateinit var latestVersion:String
+
+    @Value("\${app.download-url}")
+    private lateinit var downloadUrl:String
 
     private val log = LoggerFactory.getLogger(this::class.java)
     /**
@@ -53,27 +59,17 @@ class APIController{
     }
 
     /**
-     * 获取APP最新版本号
+     * 检查是否有新版本
+     * @return 新版本下载地址，null表示没有更新
      */
-    @GetMapping(value = ["app/version"])
-    fun getAPPLatestVersion():String?{
-        val home = ApplicationHome(javaClass)
-        val jarFile = home.source
-        val path = jarFile.parentFile.canonicalPath
-        val list = File(path).list()
-        for(fileName in list){
-            //app-0.1.apk
-            if(fileName.endsWith("apk")){
-                log.info("$fileName success")
-                return fileName.replace("app-", "").replace(".apk", "");
-            }
-        }
-        return null
+    @GetMapping(value = ["/app/update"])
+    fun update(version:String):String?{
+        return if(version == latestVersion) null else downloadUrl
     }
     /**
      * 下载App
      */
-    @GetMapping(value = ["app/download"])
+    @GetMapping(value = ["/app/download"])
     fun downApp(httpResponse: HttpServletResponse){
         httpResponse.contentType = "application/octet-stream"
         httpResponse.setHeader("Content-Disposition","attachment;filename=app.apk")
