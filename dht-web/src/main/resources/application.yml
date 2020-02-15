@@ -18,7 +18,7 @@ spring:
       connection-test-query: select 1
       connection-init-sql: SELECT 1
   redis:
-    host:
+    host: 127.0.0.1
     port: 6379
     jedis:
       pool:
