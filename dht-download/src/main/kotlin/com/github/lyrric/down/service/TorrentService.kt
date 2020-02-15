@@ -84,7 +84,6 @@ class TorrentService {
     private fun saveBTSync(torrent: Torrent){
         try {
             torrentMapper.insert(torrent)
-            dhtRedisTemplate.expire(RedisConstant.KEY_HASH_INFO+torrent.infoHash, 0, TimeUnit.SECONDS);
             if(i % 50 == 0){
                 log.info("-------------------------------save 50 torrent to db total:{}", i)
             }
