@@ -8,12 +8,15 @@ import com.github.lyrric.common.util.bencode.BencodingUtils;
 import com.github.lyrric.server.model.Node;
 import com.github.lyrric.server.model.UniqueBlockingQueue;
 import com.github.lyrric.server.netty.DHTServer;
+import com.google.common.hash.BloomFilter;
+import com.google.common.hash.Funnels;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.Charsets;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -25,6 +28,8 @@ import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +55,10 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Resource(name = "dhtRedisTemplate")
 	private RedisTemplate<String, Object> redisTemplate;
 
-	private ExecutorService pool = Executors.newFixedThreadPool(2);
+	@SuppressWarnings("UnstableApiUsage")
+	BloomFilter<String> bloomFilter = BloomFilter.create(Funnels.stringFunnel(StandardCharsets.UTF_8), 5000000, 0.1);
+
+	private ExecutorService pool = Executors.newFixedThreadPool(1);
 
 	public final UniqueBlockingQueue NODES_QUEUE = new UniqueBlockingQueue();
 
@@ -159,11 +167,16 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			return;
 		}
 		String hashStr = new BigInteger(info_hash).toString(16);
-		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr);
-		if (exist != null && exist){
-			//dhtServer.bloomFilter.add(hashStr);
+		if(bloomFilter.mightContain(hashStr)){
 			return;
 		}
+		bloomFilter.put(hashStr);
+//		Boolean exist = redisTemplate.hasKey(RedisConstant.KEY_HASH_PREFIX+hashStr);
+//		if (exist != null && exist){
+//			//dhtServer.bloomFilter.add(hashStr);
+//			return;
+//		}
+
 		HashMap<String, Object> r = new HashMap<>();
 		r.put("token", new byte[]{info_hash[0], info_hash[1]});
 		r.put("nodes", new byte[]{});
@@ -206,18 +219,29 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			byte[] nodeId = NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, id);
 			r.put("id", nodeId);
 			DatagramPacket packet = createPacket(t, "r", r, sender);
+			if(bloomFilter.mightContain(hashStr)){
+				return;
+			}
+			bloomFilter.put(hashStr);
+
 			dhtServer.sendKRPC(packet);
 			redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
-			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
-			Boolean success = redisTemplate.opsForValue().setIfAbsent(KEY_HASH_PREFIX+hashStr, "",12, TimeUnit.HOURS);
-			if(success != null && success){
-				hashCount.incrementAndGet();
-				//存入redis，过滤
-				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
-				if(hashCount.get() % 1000 == 0){
-					log.info("info hash count:{}", hashCount.get());
-				}
+
+			hashCount.incrementAndGet();
+			if(hashCount.get() % 1000 == 0){
+				log.info("info hash count:{}", hashCount.get());
 			}
+
+			//log.info("info_hash[AnnouncePeer] : {}:{} - {}", sender.getHostString(), port, hashStr);
+//			Boolean success = redisTemplate.opsForValue().setIfAbsent(KEY_HASH_PREFIX+hashStr, "",12, TimeUnit.HOURS);
+//			if(success != null && success){
+//				hashCount.incrementAndGet();
+//				//存入redis，过滤
+//				redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
+//				if(hashCount.get() % 1000 == 0){
+//					log.info("info hash count:{}", hashCount.get());
+//				}
+//			}
 
 
 		}catch (Exception e){
@@ -326,8 +350,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			map.put("r", arg);
 		}
 		byte[] buff = BencodingUtils.encode(map);
-		DatagramPacket packet = new DatagramPacket(Unpooled.copiedBuffer(buff), address);
-		return packet;
+		return new DatagramPacket(Unpooled.copiedBuffer(buff), address);
 	}
 
 	/**
