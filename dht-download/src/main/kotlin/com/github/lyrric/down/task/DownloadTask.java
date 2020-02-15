@@ -47,7 +47,7 @@ public class DownloadTask implements Runnable {
 		PeerWireClient wireClient = new PeerWireClient();
 		//设置下载完成监听器
 		wireClient.setOnFinishedListener((torrent) -> {
-			if(count.get() % 100 == 0){
+			if(count.get() % 10000 == 0){
 				log.info("download torrent count:{}, failed:{}, success:{}", count.get(), failedCount.get(), count.get()-failedCount.get());
 			}
 			if(torrent == null){
