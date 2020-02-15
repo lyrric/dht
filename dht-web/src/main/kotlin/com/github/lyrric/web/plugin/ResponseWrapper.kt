@@ -29,10 +29,11 @@ class ResponseWrapper : ResponseBodyAdvice<Any>{
         if(path.startsWith("/swagger-resources")
                 || path.startsWith("/v2/api-docs") )
             return o
-        if(o is String){
+        if(o is String || o == null){
             serverHttpResponse.headers.set("content-type", ContentType.APPLICATION_JSON.toString())
             return objectMapper.writeValueAsString(HttpResult.success(o))
         }
+
         return HttpResult.success(o)
     }
 
