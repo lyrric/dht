@@ -355,12 +355,15 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 * @date 2019/2/17
 	 **/
 	private Thread findNodeTask = new Thread(() -> {
+	    int i= 0;
 		while (true) {
 			try {
 				Node node = NODES_QUEUE.take();
-				if (node != null) {
-					findNode(node.getAddr(), node.getNodeId(), NodeIdUtil.createRandomNodeId());
-				}
+                findNode(node.getAddr(), node.getNodeId(), NodeIdUtil.createRandomNodeId());
+                i++;
+                if(i % 100 == 0){
+                    log.info("findNodeTask has been run {}", i);
+                }
 			} catch (Exception e) {
 				log.warn(e.toString());
 			}
