@@ -63,7 +63,9 @@ public class DHTServer {
 			new InetSocketAddress("router.bittorrent.com", 6881),
 			new InetSocketAddress("dht.transmissionbt.com", 6881),
 			new InetSocketAddress("router.utorrent.com", 6881),
-			new InetSocketAddress("dht.aelitis.com", 6881)));
+			new InetSocketAddress("dht.aelitis.com", 6881),
+			new InetSocketAddress("dht.libtorrent.org", 25401)
+	));
 
 	/**
 	 * 随 SpringBoot 启动 DHT 服务器
