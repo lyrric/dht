@@ -329,9 +329,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 */
 	private void findNode(InetSocketAddress address, byte[] nid, byte[] target) {
 		HashMap<String, Object> map = new HashMap<>();
-		map.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, target));
+		map.put("target", target);
 		if (nid != null)
-			map.put("target", nid);
+			map.put("id",  NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, target));
 		DatagramPacket packet = createPacket("find_node".getBytes(), "q", map, address);
 		log.info("send find node  ip = {}", address.getHostString());
 		dhtServer.sendKRPC(packet);
