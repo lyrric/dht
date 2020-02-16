@@ -76,6 +76,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				onQuery(map, packet.sender());
 			} else if ("r".equals(y)) {     //回复 Responses
 				onResponse(map, packet.sender());
+			}else{
+				log.warn("error y :{}", y);
 			}
 		}catch (Exception e){
 			e.printStackTrace();
@@ -258,7 +260,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		byte[] t = (byte[]) map.get("t");
 		//由于在我们发送查询 DHT 节点请求时，构造的查询 transaction id 为字符串 find_node（见 findNode 方法），所以根据字符串判断响应请求即可
 		String type = new String(t);
-		log.info("onResponse type {}",  type);
 		if ("find_node".equals(type)) {
 			log.info("find_node response length {}", NODES_QUEUE.size());
 			resolveNodes((Map) map.get("r"));
