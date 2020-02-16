@@ -269,7 +269,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		//由于在我们发送查询 DHT 节点请求时，构造的查询 transaction id 为字符串 find_node（见 findNode 方法），所以根据字符串判断响应请求即可
 		String type = new String(t);
 		if ("find_node".equals(type)) {
-			log.info("onResponse find_node ip = {}", sender.getHostString());
 			resolveNodes((Map) map.get("r"));
 		} else if ("ping".equals(type)) {
 
