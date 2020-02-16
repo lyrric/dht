@@ -1,5 +1,7 @@
 package com.github.lyrric.server.model;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -11,11 +13,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Mr.Xu
  * @date 2019-02-17 18:44
  **/
+@Slf4j
 public class UniqueBlockingQueue {
 
 	private Set<String> ips = new HashSet<>();
 	private BlockingQueue<Node> nodes = new LinkedBlockingQueue<>();
 
+	int i = 0;
 	public int size() {
 		return ips.size();
 	}
@@ -25,6 +29,10 @@ public class UniqueBlockingQueue {
 	}
 
 	public boolean offer(Node node) {
+		i++;
+		if(i % 10 == 0){
+			log.info("node offer {}", i);
+		}
 		if (ips.add(node.getAddr().getHostString()))
 			return nodes.offer(node);
 		return false;
