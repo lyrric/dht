@@ -82,7 +82,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			}else{
 				log.warn("error y :{}", y);
 				List<?> e  = (List<?>)map.get("e");
-				e.forEach(t->log.warn(t.toString()));
+				log.warn(e.get(0).toString());
+				log.warn(new String((byte[]) e.get(1)));
+
 			}
 		}catch (Exception e){
 			e.printStackTrace();
