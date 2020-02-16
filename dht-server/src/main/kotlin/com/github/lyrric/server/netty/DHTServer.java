@@ -90,7 +90,9 @@ public class DHTServer {
 			}
 			secondSend++;
 		}else{
-			log.info("本秒共发送:{} 次请求", secondSend);
+			if((time % 10) == 0){
+				log.info("本秒共发送:{} 次请求", secondSend);
+			}
 			secondSend = 0;
 			now = time;
 		}

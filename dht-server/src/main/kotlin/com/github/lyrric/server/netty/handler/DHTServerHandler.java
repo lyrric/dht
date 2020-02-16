@@ -2,7 +2,6 @@ package com.github.lyrric.server.netty.handler;
 
 import com.github.lyrric.common.constant.RedisConstant;
 import com.github.lyrric.common.entity.DownloadMsgInfo;
-import com.github.lyrric.common.util.ByteUtil;
 import com.github.lyrric.common.util.NodeIdUtil;
 import com.github.lyrric.common.util.bencode.BencodingUtils;
 import com.github.lyrric.server.mapper.InfoHashListMapper;
@@ -17,7 +16,6 @@ import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -30,10 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.github.lyrric.common.constant.RedisConstant.KEY_HASH_PREFIX;
 
 /***
  * 参见 Bittorrent 协议：
@@ -163,7 +158,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 * @param sender
 	 */
 	private void responseGetPeers(byte[] t, byte[] info_hash, InetSocketAddress sender) {
-		//check bloom filter, if exists then don't reply it
 		if(info_hash == null){
 			return;
 		}
@@ -360,25 +354,19 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 *
 	 * @date 2019/2/17
 	 **/
-	private Thread findNodeTask = new Thread() {
-
-		@Override
-		public void run() {
+	private Thread findNodeTask = new Thread(() -> {
+		while (true) {
 			try {
-				while (!isInterrupted()) {
-					try {
-						Node node = NODES_QUEUE.poll();
-						if (node != null) {
-							findNode(node.getAddr(), node.getNodeId(), NodeIdUtil.createRandomNodeId());
-						}
-					} catch (Exception e) {
-					}
-					Thread.sleep(50);
+				Node node = NODES_QUEUE.take();
+				if (node != null) {
+					findNode(node.getAddr(), node.getNodeId(), NodeIdUtil.createRandomNodeId());
 				}
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
+				log.warn(e.toString());
 			}
 		}
-	};
+
+	});
 
 	@PostConstruct
 	public void init() {
