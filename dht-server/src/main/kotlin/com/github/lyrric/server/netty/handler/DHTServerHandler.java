@@ -80,11 +80,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			} else if ("r".equals(y)) {     //回复 Responses
 				onResponse(map, packet.sender());
 			}else{
-				log.warn("error y :{}", y);
+
 				List<?> e  = (List<?>)map.get("e");
-				log.warn(e.get(0).toString());
-				log.warn(packet.sender().getHostString());
-				log.warn(new String((byte[]) e.get(1)));
+				log.warn("error y :{}， code：{}, msg: {}, host:{}", y,e.get(0).toString(), new String((byte[]) e.get(1)),packet.sender().getHostString());
 
 			}
 		}catch (Exception e){
@@ -290,9 +288,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 		if (nodes == null)
 			return;
-		if((System.currentTimeMillis() / 1000) % 2 == 0){
-			log.info("resolveNodes, length={}", nodes.length /26);
-		}
+//		if((System.currentTimeMillis() / 1000) % 2 == 0){
+//			log.info("resolveNodes, length={}", nodes.length /26);
+//		}
 		for (int i = 0; i < nodes.length; i += 26) {
 			try {
 				//limit the node queue size
@@ -332,7 +330,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		if (nid != null)
 			map.put("id",  NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, target));
 		DatagramPacket packet = createPacket("find_node".getBytes(), "q", map, address);
-		log.info("send find node  ip = {}", address.getHostString());
 		dhtServer.sendKRPC(packet);
 	}
 
@@ -372,9 +369,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			try {
 				Node node = NODES_QUEUE.take();
                 findNode(node.getAddr(), node.getNodeId(), NodeIdUtil.createRandomNodeId());
-                if((System.currentTimeMillis() / 1000) % 2 == 0){
-					log.info("find_node task length {}", NODES_QUEUE.size());
-				}
 			} catch (Exception e) {
 				log.warn(e.toString());
 			}
