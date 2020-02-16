@@ -19,7 +19,6 @@ public class UniqueBlockingQueue {
 	private Set<String> ips = new HashSet<>();
 	private BlockingQueue<Node> nodes = new LinkedBlockingQueue<>();
 
-	int i = 0;
 	public int size() {
 		return ips.size();
 	}
@@ -29,10 +28,6 @@ public class UniqueBlockingQueue {
 	}
 
 	public boolean offer(Node node) {
-		i++;
-		if(i % 10 == 0){
-			log.info("node offer {}", i);
-		}
 		if (ips.add(node.getAddr().getHostString()))
 			return nodes.offer(node);
 		return false;

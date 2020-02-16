@@ -290,7 +290,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 		if (nodes == null)
 			return;
-
+		if((System.currentTimeMillis() / 1000) % 2 == 0){
+			log.info("resolveNodes, length={}", nodes.length /26);
+		}
 		for (int i = 0; i < nodes.length; i += 26) {
 			try {
 				//limit the node queue size
