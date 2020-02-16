@@ -81,13 +81,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				onResponse(map, packet.sender());
 			}else{
 				log.warn("error y :{}", y);
-				try (ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) map.get("e"));
-					 BencodingInputStream bencode = new BencodingInputStream(stream)) {
-					 List<String> e  = ( List<String>)bencode.readList();
-					 e.forEach(log::warn);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				List<String> e  = (List<String>)map.get("e");
+				e.forEach(log::warn);
 			}
 		}catch (Exception e){
 			e.printStackTrace();
