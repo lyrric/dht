@@ -105,6 +105,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private void onQuery(Map<String, ?> map, InetSocketAddress sender) {
 		//transaction id 会话ID
 		byte[] t = (byte[]) map.get("t");
+
 		//query name: ping, find node, get_peers, announce_peer
 		String q = new String((byte[]) map.get("q"));
 		//query params
@@ -325,9 +326,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	 */
 	private void findNode(InetSocketAddress address, byte[] nid, byte[] target) {
 		HashMap<String, Object> map = new HashMap<>();
-		map.put("target", target);
+		map.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, target));
 		if (nid != null)
-			map.put("id", NodeIdUtil.getNeighbor(DHTServer.SELF_NODE_ID, target));
+			map.put("target", nid);
 		DatagramPacket packet = createPacket("find_node".getBytes(), "q", map, address);
 		dhtServer.sendKRPC(packet);
 	}
