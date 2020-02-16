@@ -3,6 +3,7 @@ package com.github.lyrric.server.netty.handler;
 import com.github.lyrric.common.constant.RedisConstant;
 import com.github.lyrric.common.entity.DownloadMsgInfo;
 import com.github.lyrric.common.util.NodeIdUtil;
+import com.github.lyrric.common.util.bencode.BencodingInputStream;
 import com.github.lyrric.common.util.bencode.BencodingUtils;
 import com.github.lyrric.server.mapper.InfoHashListMapper;
 import com.github.lyrric.server.model.Node;
@@ -21,10 +22,12 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,8 +81,13 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				onResponse(map, packet.sender());
 			}else{
 				log.warn("error y :{}", y);
-				String e = new String((byte[]) map.get("e"));
-				log.warn("error = {}",e);
+				try (ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) map.get("e"));
+					 BencodingInputStream bencode = new BencodingInputStream(stream)) {
+					 List<String> e  = ( List<String>)bencode.readList();
+					 e.forEach(log::warn);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}catch (Exception e){
 			e.printStackTrace();
