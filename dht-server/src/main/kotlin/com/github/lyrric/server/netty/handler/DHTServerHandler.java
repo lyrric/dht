@@ -118,7 +118,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				pool.submit(() -> {
 					responseGetPeers(t, (byte[]) a.get("info_hash"), sender);
 				});
-
 				break;
 			case "announce_peer"://announce_peers Query = {"t":"aa", "y":"q", "q":"announce_peer", "a": {"id":"abcdefghij0123456789", "implied_port": 1, "info_hash":"mnopqrstuvwxyz123456", "port": 6881, "token": "aoeusnth"}}
 				pool.submit(() -> {
@@ -266,7 +265,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		//由于在我们发送查询 DHT 节点请求时，构造的查询 transaction id 为字符串 find_node（见 findNode 方法），所以根据字符串判断响应请求即可
 		String type = new String(t);
 		if ("find_node".equals(type)) {
-			log.info("find_node response length {}", NODES_QUEUE.size());
 			resolveNodes((Map) map.get("r"));
 		} else if ("ping".equals(type)) {
 
@@ -367,7 +365,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 			try {
 				Node node = NODES_QUEUE.take();
                 findNode(node.getAddr(), node.getNodeId(), NodeIdUtil.createRandomNodeId());
-				log.info("find_node task length {}", NODES_QUEUE.size());
+                if((System.currentTimeMillis() / 1000) % 2 == 0){
+					log.info("find_node task length {}", NODES_QUEUE.size());
+				}
 			} catch (Exception e) {
 				log.warn(e.toString());
 			}
