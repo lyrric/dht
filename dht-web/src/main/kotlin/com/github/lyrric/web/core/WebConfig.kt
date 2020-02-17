@@ -1,8 +1,10 @@
 package com.github.lyrric.web.core
 
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.elasticsearch.client.ClientConfiguration
@@ -48,7 +50,7 @@ class WebConfig {
         val clientConfiguration: ClientConfiguration = ClientConfiguration.builder()
                 .connectedTo("${host}:${port}")
                 .withSocketTimeout(1000*60)
-                .withBasicAuth(username, password)
+                .withBasicAuth(username!!, password!!)
                 .build();
 
         return RestClients.create(clientConfiguration).rest();
@@ -60,5 +62,10 @@ class WebConfig {
     @Autowired
     fun elasticsearchRestTemplate(restHighLevelClient: RestHighLevelClient):ElasticsearchRestTemplate{
         return ElasticsearchRestTemplate(restHighLevelClient)
+    }
+
+    @Bean
+    fun httpMessageConverters(): HttpMessageConverters {
+        return HttpMessageConverters(FastJsonHttpMessageConverter())
     }
 }
