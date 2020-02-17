@@ -1,5 +1,7 @@
 package com.github.lyrric.web.core
 
+import com.alibaba.fastjson.serializer.SerializerFeature
+import com.alibaba.fastjson.support.config.FastJsonConfig
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,12 +12,15 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.elasticsearch.client.ClientConfiguration
 import org.springframework.data.elasticsearch.client.RestClients
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
+import org.springframework.http.MediaType
 import springfox.documentation.builders.ApiInfoBuilder
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.swagger2.annotations.EnableSwagger2
+import java.nio.charset.StandardCharsets
+import java.util.*
 
 
 /**
@@ -66,6 +71,23 @@ class WebConfig {
 
     @Bean
     fun httpMessageConverters(): HttpMessageConverters {
-        return HttpMessageConverters(FastJsonHttpMessageConverter())
+        //创建FastJson信息转换对象
+        val fastJsonHttpMessageConverter = FastJsonHttpMessageConverter()
+
+        //创建Fastjosn对象并设定序列化规则
+        val fastJsonConfig = FastJsonConfig()
+        fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat)
+
+        // 中文乱码解决方案
+        fastJsonConfig.charset = StandardCharsets.UTF_8
+        val mediaTypes: MutableList<MediaType> = ArrayList<MediaType>()
+        //设定json格式
+        mediaTypes.add(MediaType.APPLICATION_JSON)
+
+        fastJsonHttpMessageConverter.supportedMediaTypes = mediaTypes
+        //规则赋予转换对象
+        fastJsonHttpMessageConverter.fastJsonConfig = fastJsonConfig
+
+        return HttpMessageConverters(fastJsonHttpMessageConverter)
     }
 }
