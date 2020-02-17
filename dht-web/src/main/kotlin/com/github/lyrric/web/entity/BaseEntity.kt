@@ -16,5 +16,5 @@ open class BaseEntity{
     @Id
     @KeySql(dialect = IdentityDialect.MYSQL)
     @Column(insertable = false, updatable = false)
-    protected var id:BigInteger? = null
+    var id:BigInteger? = null
 }

@@ -1,10 +1,12 @@
 package com.github.lyrric.web.controller
 
+import com.github.lyrric.web.entity.UserRecord
 import com.github.lyrric.web.es.entity.EsTorrent
 import com.github.lyrric.web.model.BusinessException
 import com.github.lyrric.web.model.PageResult
 import com.github.lyrric.web.model.dto.SearchDTO
 import com.github.lyrric.web.service.DHTService
+import com.github.lyrric.web.service.UserService
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
@@ -25,6 +27,9 @@ class APIController{
 
     @Resource
     private lateinit var dhtService: DHTService
+    @Resource
+    private lateinit var userService: UserService
+
     @Value("\${app.latest-version}")
     private lateinit var latestVersion:String
 
@@ -86,6 +91,11 @@ class APIController{
             }
         }
     }
-
-    private fun getAppPath(){}
+    /**
+     * 记录用户
+     */
+    @PostMapping(value = ["/user/record"])
+    fun recordUser(@RequestBody record: UserRecord){
+        userService.recordUser(record)
+    }
 }
