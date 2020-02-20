@@ -36,6 +36,9 @@ class APIController{
     @Value("\${app.download-url}")
     private lateinit var downloadUrl:String
 
+    @Value("\${app.search-url}")
+    private lateinit var searchUrl:String
+
     private val log = LoggerFactory.getLogger(this::class.java)
     /**
      * 搜索接口
@@ -70,6 +73,14 @@ class APIController{
     @GetMapping(value = ["/app/update"])
     fun update(version:String):String?{
         return if(version == latestVersion) null else downloadUrl
+    }
+    /**
+     * 获取搜索接口Url
+     * @return
+     */
+    @GetMapping(value = ["/search/url"])
+    fun update():String?{
+        return searchUrl
     }
     /**
      * 下载App
