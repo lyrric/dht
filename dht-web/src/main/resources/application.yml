@@ -40,7 +40,7 @@ elastic:
 app:
   latest-version: 0.0.2
   download-url: http://122.51.84.22:8089/api/app/download
-  search-url: https://torrentkitty.app/search/
+  search-url: https://torrentkitty.app/search  # do not end with /
 
 #logging:
 #  level:
