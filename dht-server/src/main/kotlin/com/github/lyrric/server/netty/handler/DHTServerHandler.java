@@ -17,6 +17,7 @@ import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -53,10 +54,14 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Resource
 	private InfoHashListMapper infoHashListMapper;
 
-	private ExecutorService pool = Executors.newFixedThreadPool(50);
+	private ExecutorService pool = Executors.newFixedThreadPool(30);
 
 	public final UniqueBlockingQueue NODES_QUEUE = new UniqueBlockingQueue();
 
+	private AtomicInteger pingNum = new AtomicInteger(0);
+	private AtomicInteger findNodeNum = new AtomicInteger(0);
+	private AtomicInteger findPeerNum = new AtomicInteger(0);
+	private AtomicInteger announceNum = new AtomicInteger(0);
 	/**
 	 * 收到的hash数量
 	 */
@@ -68,23 +73,22 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		byte[] buff = new byte[packet.content().readableBytes()];
 		packet.content().readBytes(buff);
 		try {
-			Map<String, ?> map = BencodingUtils.decode(buff);
+            pool.submit(()->{
+                Map<String, ?> map = BencodingUtils.decode(buff);
+                if (map == null || map.get("y") == null)
+                    return;
 
-			if (map == null || map.get("y") == null)
-				return;
+                String y = new String((byte[]) map.get("y"));
 
-			String y = new String((byte[]) map.get("y"));
-
-			if ("q".equals(y)) {            //请求 Queries
-				onQuery(map, packet.sender());
-			} else if ("r".equals(y)) {     //回复 Responses
-				onResponse(map, packet.sender());
-			}else{
-
-				List<?> e  = (List<?>)map.get("e");
-				log.warn("error y :{}， code：{}, msg: {}, host:{}", y,e.get(0).toString(), new String((byte[]) e.get(1)),packet.sender().getHostString());
-
-			}
+                if ("q".equals(y)) {            //请求 Queries
+                    onQuery(map, packet.sender());
+                } else if ("r".equals(y)) {     //回复 Responses
+                    onResponse(map, packet.sender());
+                }else{
+                    List<?> e  = (List<?>)map.get("e");
+                    log.warn("error y :{}， code：{}, msg: {}, host:{}", y,e.get(0).toString(), new String((byte[]) e.get(1)),packet.sender().getHostString());
+                }
+            });
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -108,27 +112,38 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		String q = new String((byte[]) map.get("q"));
 		//query params
 		Map<String, ?> a = (Map<String, ?>) map.get("a");
-		//log.info("on query, query name is {}", q);
+		//log.info("onQuery type:{}", q);
 		switch (q) {
 			case "ping"://ping Query = {"t":"aa", "y":"q", "q":"ping", "a":{"id":"发送者ID"}}
 				responsePing(t, (byte[]) a.get("id"), sender);
+				pingNum.incrementAndGet();
+				if((pingNum.get() % 1000) == 0){
+					log.info("pingNum count:{}", pingNum.get());
+				}
 				break;
 			case "find_node"://find_node Query = {"t":"aa", "y":"q", "q":"find_node", "a": {"id":"abcdefghij0123456789", "target":"mnopqrstuvwxyz123456"}}
 				responseFindNode(t, (byte[]) a.get("id"), sender);
+				findNodeNum.incrementAndGet();
+				if((findNodeNum.get() % 10000) == 0){
+					log.info("findNodeNum count:{}", findNodeNum.get());
+				}
 				break;
 			case "get_peers"://get_peers Query = {"t":"aa", "y":"q", "q":"get_peers", "a": {"id":"abcdefghij0123456789", "info_hash":"mnopqrstuvwxyz123456"}}
-				pool.submit(() -> {
-					responseGetPeers(t, (byte[]) a.get("info_hash"), sender);
-				});
+				responseGetPeers(t, (byte[]) a.get("info_hash"), sender);
+				findPeerNum.incrementAndGet();
+				if((findPeerNum.get() % 10000) == 0){
+					log.info("findPeerNum count:{}", findPeerNum.get());
+				}
 				break;
 			case "announce_peer"://announce_peers Query = {"t":"aa", "y":"q", "q":"announce_peer", "a": {"id":"abcdefghij0123456789", "implied_port": 1, "info_hash":"mnopqrstuvwxyz123456", "port": 6881, "token": "aoeusnth"}}
-				pool.submit(() -> {
-					responseAnnouncePeer(t, a, sender);
-				});
+                responseAnnouncePeer(t, a, sender);
+				announceNum.incrementAndGet();
+				if((announceNum.get() % 1000) == 0){
+					log.info("announceNum count:{}", announceNum.get());
+				}
 				break;
 		}
 	}
-
 	/**
 	 * 回复 ping 请求
 	 * Response = {"t":"aa", "y":"r", "r": {"id":"自身节点ID"}}
@@ -210,6 +225,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 //			if(success == null || !success){
 //				return;
 //			}
+
 			if(infoHashListMapper.selectCountByHash(hashStr) > 0){
 				return ;
 			}
@@ -288,13 +304,10 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 		if (nodes == null)
 			return;
-//		if((System.currentTimeMillis() / 1000) % 2 == 0){
-//			log.info("resolveNodes, length={}", nodes.length /26);
-//		}
 		for (int i = 0; i < nodes.length; i += 26) {
 			try {
 				//limit the node queue size
-				if (NODES_QUEUE.size() > 3000)
+				if (NODES_QUEUE.size() > 6000)
 					return;
 				InetAddress ip = InetAddress.getByAddress(new byte[]{nodes[i + 20], nodes[i + 21], nodes[i + 22], nodes[i + 23]});
 				InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (nodes[i + 24] << 8)) | (0x000000FF & nodes[i + 25]));
