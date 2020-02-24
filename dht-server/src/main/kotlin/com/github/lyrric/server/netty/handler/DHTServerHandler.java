@@ -54,7 +54,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Resource
 	private InfoHashListMapper infoHashListMapper;
 
-	private ExecutorService pool = Executors.newFixedThreadPool(30);
+	private ExecutorService pool = Executors.newFixedThreadPool(50);
 
 	public final UniqueBlockingQueue NODES_QUEUE = new UniqueBlockingQueue();
 
@@ -69,10 +69,10 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) {
+		byte[] buff = new byte[packet.content().readableBytes()];
+		packet.content().readBytes(buff);
 		pool.submit(()->{
 			try {
-				byte[] buff = new byte[packet.content().readableBytes()];
-				packet.content().readBytes(buff);
 				Map<String, ?> map = BencodingUtils.decode(buff);
 				if (map == null || map.get("y") == null)
 					return;
