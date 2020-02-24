@@ -98,6 +98,18 @@ public class DHTServer {
 			secondSend = 0;
 			now = time;
 		}
-		serverChannelFuture.channel().writeAndFlush(packet);
+        if(serverChannelFuture.channel().isWritable()){
+            serverChannelFuture.channel().writeAndFlush(packet).addListener(future -> {
+                if (!future.isSuccess()) {
+                    log.warn("unexpected push. msg:{} fail:{}", packet, future.cause().getMessage());
+                }
+            });
+        }else{
+            try {
+                serverChannelFuture.channel().writeAndFlush(packet).sync();
+            } catch (InterruptedException e) {
+                log.info("write and flush msg exception. host {}, err msg:[{}]", packet.sender().getHostString(), e);
+            }
+        }
 	}
 }
