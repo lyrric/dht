@@ -102,6 +102,7 @@ public class DHTServer {
         if(serverChannelFuture.channel().isWritable()){
             serverChannelFuture.channel().writeAndFlush(packet).addListener(future -> {
                 if (!future.isSuccess()) {
+					future.cause().printStackTrace();
                     log.warn("unexpected push. msg:{} fail:{}", packet, future.cause().getMessage());
                 }
             });
