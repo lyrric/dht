@@ -92,11 +92,12 @@ public class DHTServer {
 			}
 			secondSend++;
 		}else{
-			if((time % 10) == 0){
+			if((time % 10) == 0 && secondSend != 0){
 				log.info("本秒共发送:{} 次请求", secondSend);
 			}
 			secondSend = 0;
 			now = time;
+
 		}
         if(serverChannelFuture.channel().isWritable()){
             serverChannelFuture.channel().writeAndFlush(packet).addListener(future -> {

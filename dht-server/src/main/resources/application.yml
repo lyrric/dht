@@ -7,13 +7,13 @@ netty:
   so:
     rcvbuf: 1048576 #1g
     sndbuf: 65536
-    send-limit: 18000
+    send-limit: 4500
 
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://122.51.84.22:3306/dht?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://127.0.0.1:3306/dht?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
     username: dht
     password:
     hikari:
