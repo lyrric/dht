@@ -69,33 +69,28 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) {
+		pool.submit(()->{
+			try {
+				byte[] buff = new byte[packet.content().readableBytes()];
+				packet.content().readBytes(buff);
+				Map<String, ?> map = BencodingUtils.decode(buff);
+				if (map == null || map.get("y") == null)
+					return;
 
-		byte[] buff = new byte[packet.content().readableBytes()];
-		packet.content().readBytes(buff);
-		try {
-            pool.submit(()->{
-                Map<String, ?> map = BencodingUtils.decode(buff);
-                if (map == null || map.get("y") == null)
-                    return;
+				String y = new String((byte[]) map.get("y"));
 
-                String y = new String((byte[]) map.get("y"));
-
-                if ("q".equals(y)) {            //请求 Queries
-                    onQuery(map, packet.sender());
-                } else if ("r".equals(y)) {     //回复 Responses
-                    onResponse(map, packet.sender());
-                }else{
-                    List<?> e  = (List<?>)map.get("e");
-                    log.warn("error y :{}， code：{}, msg: {}, host:{}", y,e.get(0).toString(), new String((byte[]) e.get(1)),packet.sender().getHostString());
-                }
-            });
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-
-
-
-
+				if ("q".equals(y)) {            //请求 Queries
+					onQuery(map, packet.sender());
+				} else if ("r".equals(y)) {     //回复 Responses
+					onResponse(map, packet.sender());
+				}else{
+					List<?> e  = (List<?>)map.get("e");
+					log.warn("error y :{}， code：{}, msg: {}, host:{}", y,e.get(0).toString(), new String((byte[]) e.get(1)),packet.sender().getHostString());
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+		});
 	}
 
 	/**
