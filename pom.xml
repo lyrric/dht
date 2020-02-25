@@ -75,14 +75,18 @@
     </dependencyManagement>
     <repositories>
         <repository>
-            <id>nuiton</id>
-            <name>Nexus nuiton</name>
-            <url>http://maven.nuiton.org/release/</url>
-        </repository>
-        <repository>
             <id>nexus-aliyun</id>
             <name>Nexus aliyun</name>
             <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>maven</id>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>nuiton</id>
+            <name>Nexus nuiton</name>
+            <url>http://maven.nuiton.org/release/</url>
         </repository>
         <repository>
             <id>spring-snapshots</id>
@@ -96,10 +100,6 @@
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
             <url>https://repo.spring.io/milestone</url>
-        </repository>
-        <repository>
-            <id>maven</id>
-            <url>https://repo1.maven.org/maven2</url>
         </repository>
     </repositories>
     <pluginRepositories>

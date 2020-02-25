@@ -15,7 +15,7 @@ public class BencodingUtils {
 	public static final Integer TRUE = 1;
 	public static final Integer FALSE = 0;
 
-	public static byte[] encode(Map map) {
+	public static byte[] encode(Map<String, ?> map) {
 		try (ByteArrayOutputStream stream = new ByteArrayOutputStream();
              BencodingOutputStream bencode = new BencodingOutputStream(stream)) {
 			bencode.writeMap(map);

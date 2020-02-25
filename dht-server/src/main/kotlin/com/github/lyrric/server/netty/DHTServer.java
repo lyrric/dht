@@ -52,7 +52,7 @@ public class DHTServer {
 	/**
 	 * 本机 DHT 节点 ID （根据 IP 生成）
 	 */
-	public static final byte[] SELF_NODE_ID = NodeIdUtil.randSelfNodeId();
+
 
 	public static final int SECRET = 888;
 
@@ -84,7 +84,7 @@ public class DHTServer {
 	 *
 	 * @param packet
 	 */
-	public void sendKRPC(DatagramPacket packet) {
+	public void sendKRPCWithLimit(DatagramPacket packet) {
 		long time = System.currentTimeMillis()/1000;
 		if(time == now){
 			if(secondSend >= sendLimit){
@@ -97,21 +97,32 @@ public class DHTServer {
 			}
 			secondSend = 0;
 			now = time;
-
 		}
-        if(serverChannelFuture.channel().isWritable()){
-            serverChannelFuture.channel().writeAndFlush(packet).addListener(future -> {
-                if (!future.isSuccess()) {
+		sendKRPC(packet);
+	}
+
+	/**
+	 * 发送KRPC，不限制发送频率
+	 * @param packet
+	 */
+	public void sendKRPCWithoutLimit(DatagramPacket packet) {
+		sendKRPC(packet);
+	}
+
+	private void sendKRPC(DatagramPacket packet){
+		if(serverChannelFuture.channel().isWritable()){
+			serverChannelFuture.channel().writeAndFlush(packet).addListener(future -> {
+				if (!future.isSuccess()) {
 					future.cause().printStackTrace();
-                    log.warn("unexpected push. msg:{} fail:{}", packet, future.cause().getMessage());
-                }
-            });
-        }else{
-            try {
-                serverChannelFuture.channel().writeAndFlush(packet).sync();
-            } catch (InterruptedException e) {
-                log.info("write and flush msg exception. host {}, err msg:[{}]", packet.sender().getHostString(), e);
-            }
-        }
+					log.warn("unexpected push. msg:{} fail:{}", packet, future.cause().getMessage());
+				}
+			});
+		}else{
+			try {
+				serverChannelFuture.channel().writeAndFlush(packet).sync();
+			} catch (InterruptedException e) {
+				log.info("write and flush msg exception. host {}, err msg:[{}]", packet.sender().getHostString(), e);
+			}
+		}
 	}
 }

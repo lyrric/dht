@@ -40,9 +40,9 @@ public class DownloadTask implements Runnable {
 	@Override
 	public void run() {
 		//由于下载线程消费的速度总是比 dht server 生产的速度慢，所以要做一下时间限制，否则程序越跑越慢
-		if (SystemClock.now() - msgInfo.getTimestamp() >= Constants.MAX_LOSS_TIME) {
-			return;
-		}
+//		if (SystemClock.now() - msgInfo.getTimestamp() >= Constants.MAX_LOSS_TIME) {
+//			return;
+//		}
 		count.incrementAndGet();
 		PeerWireClient wireClient = new PeerWireClient();
 		//设置下载完成监听器

@@ -1,9 +1,16 @@
 package com.github.lyrric.common.util;
 
+import com.github.lyrric.common.util.bencode.BencodingUtils;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.socket.DatagramPacket;
+
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Network Utility class for the network card on a gumstix
@@ -13,7 +20,7 @@ public final class NetworkUtil {
      * The current host IP address is the IP address from the device.
      */
     private static String currentHostIpAddress;
-
+    public static final byte[] SELF_NODE_ID = NodeIdUtil.randSelfNodeId();
     /**
      * @return the current environment's IP address, taking into account the Internet connection to any of the available
      *         machine's Network interfaces. Examples of the outputs can be in octats or in IPV6 format.
@@ -86,5 +93,31 @@ public final class NetworkUtil {
         }
         return result;
     }
-
+    /**
+     * 构造 KRPC 协议数据
+     *
+     * @param t transaction id
+     * @param y 请求q，回复r
+     * @param q 发送请求时，请求类型
+     * @param arg 参数，
+     * @return
+     */
+    public static DatagramPacket createPacket(byte[] t, String y, String q, Map<String, Object> arg, InetSocketAddress address) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("t", t);
+        map.put("y", y);
+        if (!arg.containsKey("id")) {
+            arg.put("id", SELF_NODE_ID);
+        }
+        if ("q".equals(y)) {
+            //请求消息
+            map.put("q", q);
+            map.put("a", arg);
+        } else {
+            //回复消息
+            map.put("r", arg);
+        }
+        byte[] buff = BencodingUtils.encode(map);
+        return new DatagramPacket(Unpooled.copiedBuffer(buff), address);
+    }
 }
