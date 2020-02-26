@@ -1,22 +1,27 @@
 package com.github.lyrric.server.netty;
 
 
-import com.github.lyrric.common.util.NodeIdUtil;
+import com.github.lyrric.common.constant.MethodEnum;
+import com.github.lyrric.common.constant.RedisConstant;
+import com.github.lyrric.common.util.MessageIdUtil;
+import com.github.lyrric.common.util.NetworkUtil;
+import com.github.lyrric.server.model.RequestMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /***
  * 模拟 DHT 节点服务器
@@ -36,7 +41,8 @@ public class DHTServer {
 
 	private ChannelFuture serverChannelFuture;
 
-	private String filterSavePath;
+	@Resource(name = "dhtRedisTemplate")
+	private RedisTemplate<String, Object> redisTemplate;
 
     @Value("${netty.so.send-limit}")
     private int sendLimit;
@@ -48,12 +54,6 @@ public class DHTServer {
 	 * 当前秒
 	 */
 	private long now = System.currentTimeMillis() / 1000;
-
-	/**
-	 * 本机 DHT 节点 ID （根据 IP 生成）
-	 */
-
-
 	public static final int SECRET = 888;
 
 	/**
@@ -102,10 +102,14 @@ public class DHTServer {
 	}
 
 	/**
-	 * 发送KRPC，不限制发送频率
-	 * @param packet
+	 * 发送get_peers，不限制发送频率
+	 * @param infoHash
 	 */
-	public void sendKRPCWithoutLimit(DatagramPacket packet) {
+	public void sendGetPeers(String infoHash, InetSocketAddress address, String transactionId) {
+		HashMap<String, Object> map = new HashMap<>(5);
+		map.put("info_hash",infoHash);
+		map.put("id", NetworkUtil.SELF_NODE_ID);
+		DatagramPacket packet = NetworkUtil.createPacket(transactionId.getBytes(), "q", MethodEnum.GET_PEERS.name, map, address);
 		sendKRPC(packet);
 	}
 

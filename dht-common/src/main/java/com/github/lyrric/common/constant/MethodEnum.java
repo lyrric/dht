@@ -15,9 +15,9 @@ public enum MethodEnum {
     /**
      * 名称
      */
-    private String name;
+    public final String name;
 
-    MethodEnum(String name) {
+     MethodEnum(String name) {
         this.name = name;
     }
 }

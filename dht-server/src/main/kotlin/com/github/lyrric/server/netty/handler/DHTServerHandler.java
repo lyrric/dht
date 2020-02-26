@@ -62,8 +62,9 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 		pool.submit(()->{
 			try {
 				Map<String, ?> map = BencodingUtils.decode(buff);
-				if (map == null || map.get("y") == null)
+				if (map == null || map.get("y") == null) {
 					return;
+				}
 				String y = new String((byte[]) map.get("y"));
 				if ("q".equals(y)) {
 					//请求 Queries
@@ -89,5 +90,13 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		super.channelUnregistered(ctx);
+	}
+	/**
+	 * 异常捕获
+	 */
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		log.error("发生异常:{}",cause.getMessage());
+		// ctx.close();
 	}
 }

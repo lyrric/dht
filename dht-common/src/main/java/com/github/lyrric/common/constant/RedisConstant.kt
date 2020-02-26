@@ -15,6 +15,9 @@ class RedisConstant {
          * 存储种子的key，分布式队列保存到数据库
          */
         const val KEY_TORRENT:String = "DHT:TORRENT"
-
+        /**
+         * 存储消息的prefix
+         */
+        const val KEY_MESSAGE_PREFIX:String = "DHT:MESSAGE:"
     }
 }

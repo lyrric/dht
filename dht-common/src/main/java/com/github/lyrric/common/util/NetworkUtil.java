@@ -20,6 +20,9 @@ public final class NetworkUtil {
      * The current host IP address is the IP address from the device.
      */
     private static String currentHostIpAddress;
+    /**
+     * 本机 DHT 节点 ID （根据 IP 生成）
+     */
     public static final byte[] SELF_NODE_ID = NodeIdUtil.randSelfNodeId();
     /**
      * @return the current environment's IP address, taking into account the Internet connection to any of the available

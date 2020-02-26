@@ -15,6 +15,7 @@
 
 	<properties>
 		<elasticsearch.version>7.5.1</elasticsearch.version>
+		<kotlin.version>1.3.61</kotlin.version>
 	</properties>
 
 	<dependencies>
@@ -105,6 +106,17 @@
 			<artifactId>fastjson</artifactId>
 			<version>1.2.62</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib-jdk8</artifactId>
+			<version>${kotlin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-test</artifactId>
+			<version>${kotlin.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -116,8 +128,7 @@
 	</repositories>
 	<build>
 		<finalName>dht-web</finalName>
-		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+		<sourceDirectory>src/main/kotlin</sourceDirectory>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -132,6 +143,23 @@
 			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
+				<version>${kotlin.version}</version>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
 					<args>
 						<arg>-Xjsr305=strict</arg>
@@ -139,6 +167,7 @@
 					<compilerPlugins>
 						<plugin>spring</plugin>
 					</compilerPlugins>
+					<jvmTarget>1.8</jvmTarget>
 				</configuration>
 				<dependencies>
 					<dependency>

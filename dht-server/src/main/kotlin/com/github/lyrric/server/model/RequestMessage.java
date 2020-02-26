@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class RequestMessage {
 
-    private String id;
+    private String transactionId;
     /**
      *  消息类型find_node, get_peers
      */
@@ -21,8 +21,8 @@ public class RequestMessage {
     private String hashInfo;
 
 
-    public RequestMessage(String id, String type, String hashInfo) {
-        this.id = id;
+    public RequestMessage(String transactionId, String type, String hashInfo) {
+        this.transactionId = transactionId;
         this.type = type;
         this.hashInfo = hashInfo;
     }

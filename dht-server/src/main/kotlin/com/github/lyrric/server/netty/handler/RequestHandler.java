@@ -1,5 +1,6 @@
 package com.github.lyrric.server.netty.handler;
 
+import com.github.lyrric.common.constant.MethodEnum;
 import com.github.lyrric.common.constant.RedisConstant;
 import com.github.lyrric.common.entity.DownloadMsgInfo;
 import com.github.lyrric.common.util.MessageIdUtil;
@@ -17,9 +18,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -37,8 +38,6 @@ public class RequestHandler {
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
     private InfoHashListMapper infoHashListMapper;
-
-
 
     private AtomicInteger pingNum = new AtomicInteger(0);
     private AtomicInteger findNodeNum = new AtomicInteger(0);
@@ -59,14 +58,11 @@ public class RequestHandler {
          //transaction id 会话ID
         byte[] t = (byte[]) map.get("t");
 
-        //query name: ping, find node, get_peers, announce_peer
         String q = new String((byte[]) map.get("q"));
-        //query params
         Map<String, ?> a = (Map<String, ?>) map.get("a");
         //log.info("onQuery type:{}", q);
         switch (q) {
             case "ping":
-                //ping Query = {"t":"aa", "y":"q", "q":"ping", "a":{"id":"发送者ID"}}
                 responsePing(t, (byte[]) a.get("id"), sender);
                 pingNum.incrementAndGet();
                 if((pingNum.get() % 1000) == 0){
@@ -74,7 +70,6 @@ public class RequestHandler {
                 }
                 break;
             case "find_node":
-                //find_node Query = {"t":"aa", "y":"q", "q":"find_node", "a": {"id":"abcdefghij0123456789", "target":"mnopqrstuvwxyz123456"}}
                 responseFindNode(t, (byte[]) a.get("id"), sender);
                 findNodeNum.incrementAndGet();
                 if((findNodeNum.get() % 10000) == 0){
@@ -82,7 +77,6 @@ public class RequestHandler {
                 }
                 break;
             case "get_peers":
-                //get_peers Query = {"t":"aa", "y":"q", "q":"get_peers", "a": {"id":"abcdefghij0123456789", "info_hash":"mnopqrstuvwxyz123456"}}
                 responseGetPeers(t, (byte[]) a.get("info_hash"), sender);
                 findPeerNum.incrementAndGet();
                 if((findPeerNum.get() % 10000) == 0){
@@ -90,7 +84,6 @@ public class RequestHandler {
                 }
                 break;
             case "announce_peer":
-                //announce_peers Query = {"t":"aa", "y":"q", "q":"announce_peer", "a": {"id":"abcdefghij0123456789", "implied_port": 1, "info_hash":"mnopqrstuvwxyz123456", "port": 6881, "token": "aoeusnth"}}
                 responseAnnouncePeer(t, a, sender);
                 announceNum.incrementAndGet();
                 if((announceNum.get() % 1000) == 0){
@@ -152,7 +145,7 @@ public class RequestHandler {
         DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
         dhtServer.sendKRPCWithLimit(packet);
 
-
+        sendGetPeers(hashStr);
     }
 
     /**
@@ -160,13 +153,11 @@ public class RequestHandler {
      * @param infoHash 磁力hash
      */
     private void sendGetPeers(String infoHash){
+        RequestMessage message = new RequestMessage(MessageIdUtil.nextId(), MethodEnum.GET_PEERS.name(), infoHash);
+        //有效期为三分钟
+        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId(), message, 3, TimeUnit.MINUTES);
         for (InetSocketAddress addr : DHTServer.BOOTSTRAP_NODES) {
-            HashMap<String, Object> map = new HashMap<>();
-            String messageId = MessageIdUtil.nextId();
-            RequestMessage requestMessage = new RequestMessage();
-            //map.put("id", NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, infoHash));
-            map.put("info_hash",infoHash);
-            //DatagramPacket packet = NetworkUtil.createPacket(, "q", "get_peers", map, addr);
+            dhtServer.sendGetPeers(infoHash, addr, message.getTransactionId());
 
         }
     }
@@ -187,9 +178,9 @@ public class RequestHandler {
      */
     private void responseAnnouncePeer(byte[] t, Map a, InetSocketAddress sender) {
         try {
-            byte[] info_hash = (byte[]) a.get("info_hash");
+            byte[] infoHash = (byte[]) a.get("info_hash");
             byte[] token = (byte[]) a.get("token");
-            String hashStr = new BigInteger(1,info_hash).toString(16);
+            String hashStr = new BigInteger(1,infoHash).toString(16);
 
             if(infoHashListMapper.selectCountByHash(hashStr) > 0){
                 return ;
@@ -203,7 +194,7 @@ public class RequestHandler {
                 }
             }
             byte[] id = (byte[]) a.get("id");
-            if(token.length != 2 || info_hash[0] != token[0] || info_hash[1] != token[1]) {
+            if(token.length != 2 || infoHash[0] != token[0] || infoHash[1] != token[1]) {
                 return;
             }
             int port;
@@ -213,15 +204,15 @@ public class RequestHandler {
                 port = ((BigInteger) a.get("port")).intValue();
             }
 
-            HashMap<String, Object> r = new HashMap<>();
+            //HashMap<String, Object> r = new HashMap<>();
             byte[] nodeId = NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, id);
-            r.put("id", nodeId);
-            DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
+            //r.put("id", nodeId);
+            //DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
 
             //保存到下载队列
-            redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, info_hash));
+            redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, infoHash));
             //回复消息
-            dhtServer.sendKRPCWithLimit(packet);
+            //dhtServer.sendKRPCWithLimit(packet);
 
             hashCount.incrementAndGet();
             if(hashCount.get() % 1000 == 0){

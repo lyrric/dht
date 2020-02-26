@@ -66,7 +66,8 @@ public class PeerWireClient {
 
 	public void downloadMetadata(InetSocketAddress address, byte[] peerId, byte[] infoHash) {
 		this.peerId = peerId;
-		hexHash = new BigInteger(1,infoHash).toString(16);;
+		hexHash = new BigInteger(1,infoHash).toString(16);
+		new BigInteger(hexHash).toByteArray();
 		socket = new Socket();
 		try {
 			socket.connect(address, Constants.CONNECT_TIMEOUT);
