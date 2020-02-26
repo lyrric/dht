@@ -163,7 +163,7 @@ public class ResponseHandler {
             map.put("id",  NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, target));
         }
         DatagramPacket packet = NetworkUtil.createPacket("find_node".getBytes(), "q", "find_node", map, address);
-        dhtServer.sendKRPCWithLimit(packet);
+         dhtServer.sendKRPCWithLimit(packet);
     }
     /**
      * 查询 DHT 节点线程，用于持续获取新的 DHT 节点

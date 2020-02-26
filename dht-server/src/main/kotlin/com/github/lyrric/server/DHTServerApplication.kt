@@ -1,5 +1,6 @@
 package com.github.lyrric.server
 
+import com.github.lyrric.common.util.MessageIdUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

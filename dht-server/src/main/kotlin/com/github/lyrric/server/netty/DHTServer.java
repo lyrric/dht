@@ -84,7 +84,7 @@ public class DHTServer {
 	 *
 	 * @param packet
 	 */
-	public void sendKRPCWithLimit(DatagramPacket packet) {
+	public void  sendKRPCWithLimit(DatagramPacket packet) {
 		long time = System.currentTimeMillis()/1000;
 		if(time == now){
 			if(secondSend >= sendLimit){
@@ -98,7 +98,7 @@ public class DHTServer {
 			secondSend = 0;
 			now = time;
 		}
-		sendKRPC(packet);
+ 		sendKRPC(packet);
 	}
 
 	/**
@@ -117,7 +117,6 @@ public class DHTServer {
 		if(serverChannelFuture.channel().isWritable()){
 			serverChannelFuture.channel().writeAndFlush(packet).addListener(future -> {
 				if (!future.isSuccess()) {
-					future.cause().printStackTrace();
 					log.warn("unexpected push. msg:{} fail:{}", packet, future.cause().getMessage());
 				}
 			});
