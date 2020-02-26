@@ -2,6 +2,8 @@ package com.github.lyrric.server.netty.schedule;
 
 import com.github.lyrric.server.netty.DHTServer;
 import com.github.lyrric.server.netty.handler.DHTServerHandler;
+import com.github.lyrric.server.netty.handler.RequestHandler;
+import com.github.lyrric.server.netty.handler.ResponseHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,15 +22,13 @@ import javax.annotation.Resource;
 public class AutoJoinDHT {
 
 	@Resource
-	private DHTServer dhtServer;
-	@Resource
-	private DHTServerHandler handler;
+	private ResponseHandler responseHandler;
 
 	@Scheduled(fixedDelay = 60*60 * 1000, initialDelay = 10 * 1000)
 	public void doJob() {
-		if (handler.NODES_QUEUE.isEmpty()) {
+		if (DHTServerHandler.NODES_QUEUE.isEmpty()) {
 			log.info("本地 DHT 节点数为0，自动重新加入 DHT 网络中...");
-			handler.joinDHT();
+			responseHandler.joinDHT();
 		}
 	}
 }
