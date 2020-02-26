@@ -93,7 +93,7 @@
             <url>https://repo.spring.io/snapshot</url>
             <snapshots>
                 <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
+                <updatePolicy>never</updatePolicy>
             </snapshots>
         </repository>
         <repository>
