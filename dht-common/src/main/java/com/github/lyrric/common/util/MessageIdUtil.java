@@ -16,7 +16,7 @@ public class MessageIdUtil {
     /**
      * 最大ID
      */
-    private static  final int maxId = 0xffffff;
+    private static  final int maxId = 0xffff;
 
     /**
      * 获取下一个ID
@@ -29,7 +29,7 @@ public class MessageIdUtil {
             }else{
                 nowId++;
             }
-            return String.format("%06d",nowId);
+            return String.format("%04d",nowId);
         }
     }
 }
