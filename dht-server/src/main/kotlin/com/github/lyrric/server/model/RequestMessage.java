@@ -2,13 +2,15 @@ package com.github.lyrric.server.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Created on 2020-02-25.
  *
  * @author wangxiaodong
  */
 @Data
-public class RequestMessage {
+public class RequestMessage implements Serializable {
 
     private String transactionId;
     /**
