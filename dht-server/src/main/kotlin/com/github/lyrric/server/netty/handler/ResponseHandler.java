@@ -113,8 +113,6 @@ public class ResponseHandler {
                     log.error(e.getMessage());
                 }
             }
-
-
             //如果peer达到了五个，就手动删除transaction Id，以后该消息的回复，都不再处理，避免重复下载
             if(peers.size() >= 5){
                 redisTemplate.delete(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId());
