@@ -59,6 +59,7 @@ public class ResponseHandler {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
         }catch (Exception e){
             log.warn(e.getMessage());
+            log.warn("error id {}", new String(id));
             return;
         }
 
