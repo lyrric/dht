@@ -149,14 +149,14 @@ public class RequestHandler {
         DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
         dhtServer.sendKRPCWithLimit(packet);
 
-        sendGetPeers(hashStr);
+        sendGetPeers(info_hash);
     }
 
     /**
      * 送get_peers请求，请求种子peers
      * @param infoHash 磁力hash
      */
-    private void sendGetPeers(String infoHash){
+    private void sendGetPeers(byte[] infoHash){
         RequestMessage message = new RequestMessage(MessageIdUtil.generatorIntId().toString(), MethodEnum.GET_PEERS.name(), infoHash);
         //有效期为三分钟
         redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId(), message, 3, TimeUnit.MINUTES);

@@ -102,9 +102,9 @@ public class DHTServer {
 	 * 发送get_peers，不限制发送频率
 	 * @param infoHash
 	 */
-	public void sendGetPeers(String infoHash, InetSocketAddress address, String transactionId) {
+	public void sendGetPeers(byte[] infoHash, InetSocketAddress address, String transactionId) {
 		HashMap<String, Object> map = new HashMap<>(5);
-		map.put("info_hash",ByteUtil.hexStringToBytes(infoHash));
+		map.put("info_hash", infoHash);
 		map.put("id", NetworkUtil.SELF_NODE_ID);
 		DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(Integer.parseInt(transactionId)), "q", MethodEnum.GET_PEERS.name, map, address);
 		sendKRPC(packet);

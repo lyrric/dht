@@ -20,10 +20,10 @@ public class RequestMessage implements Serializable {
     /**
      * 种子hash
      */
-    private String hashInfo;
+    private byte[] hashInfo;
 
 
-    public RequestMessage(String transactionId, String type, String hashInfo) {
+    public RequestMessage(String transactionId, String type, byte[] hashInfo) {
         this.transactionId = transactionId;
         this.type = type;
         this.hashInfo = hashInfo;
