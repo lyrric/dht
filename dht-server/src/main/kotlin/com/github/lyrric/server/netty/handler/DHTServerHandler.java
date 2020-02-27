@@ -9,6 +9,7 @@ import com.github.lyrric.server.mapper.InfoHashListMapper;
 import com.github.lyrric.server.model.Node;
 import com.github.lyrric.server.model.UniqueBlockingQueue;
 import com.github.lyrric.server.netty.DHTServer;
+import com.github.lyrric.server.util.RouteTable;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -49,6 +50,8 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private RequestHandler requestHandler;
 	@Resource
 	private ResponseHandler responseHandler;
+	@Resource
+	private RouteTable routeTable;
 
 	private ExecutorService pool = Executors.newFixedThreadPool(50);
 
@@ -65,6 +68,7 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				if (map == null || map.get("y") == null) {
 					return;
 				}
+				routeTable.add(new Node(null, packet.sender()));
 				String y = new String((byte[]) map.get("y"));
 				if ("q".equals(y)) {
 					//请求 Queries
