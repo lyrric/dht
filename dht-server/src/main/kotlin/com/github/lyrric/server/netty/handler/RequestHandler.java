@@ -159,7 +159,7 @@ public class RequestHandler {
     private void sendGetPeers(byte[] infoHash){
         RequestMessage message = new RequestMessage(MessageIdUtil.generatorIntId().toString(), MethodEnum.GET_PEERS.name(), infoHash);
         //有效期为三分钟
-        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId(), message, 3, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId(), message, 30, TimeUnit.MINUTES);
         List<Node> nodes = routeTable.getAll();
         for (Node node : nodes) {
             dhtServer.sendGetPeers(infoHash, node.getAddr(), message.getTransactionId());

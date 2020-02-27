@@ -188,7 +188,7 @@ public class ResponseHandler {
         }
         Integer transactionId = MessageIdUtil.generatorIntId();
         RequestMessage requestMessage = new RequestMessage(transactionId.toString(), MethodEnum.FIND_NODE.value, null);
-        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+requestMessage.getTransactionId(), requestMessage,5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+requestMessage.getTransactionId(), requestMessage,30, TimeUnit.MINUTES);
         DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(transactionId), "q", "find_node", map, address);
         dhtServer.sendKRPCWithLimit(packet);
     }
