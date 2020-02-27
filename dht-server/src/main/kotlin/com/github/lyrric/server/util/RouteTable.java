@@ -49,7 +49,6 @@ public class RouteTable {
                 lastTime = time;
                 nodes.add(node);
                 nodes.remove(0);
-                log.info("add node {}", node.getAddr());
             }catch (Exception e){
                 e.printStackTrace();
             }finally {

@@ -24,6 +24,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created on 2020-02-25.
@@ -40,6 +41,10 @@ public class ResponseHandler {
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
     private RouteTable routeTable;
+
+    private AtomicInteger findNodeNum = new AtomicInteger(0);
+
+    private AtomicInteger findPeerNum = new AtomicInteger(0);
 
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
@@ -63,12 +68,20 @@ public class ResponseHandler {
         switch (type) {
             case "find_node":
                 resolveNodes(r);
+                findNodeNum.incrementAndGet();
+                if((findNodeNum.get() % 100) == 0){
+                    log.info("findNodeNum count:{}", findNodeNum.get());
+                }
                 break;
             case "ping":
 
                 break;
             case "get_peers":
                 resolvePeers(r, message);
+                findPeerNum.incrementAndGet();
+                if((findPeerNum.get() % 100) == 0){
+                    log.info("findPeerNum count:{}", findPeerNum.get());
+                }
                 break;
             case "announce_peer":
 
