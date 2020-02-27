@@ -46,7 +46,9 @@ public class ResponseHandler {
         String transactionId;
         try {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
+            log.info("on response transactionId {}", transactionId);
         }catch (Exception e){
+            e.printStackTrace();
             return;
         }
         RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
