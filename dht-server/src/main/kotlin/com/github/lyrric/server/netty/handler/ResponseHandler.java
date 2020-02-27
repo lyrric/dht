@@ -106,7 +106,7 @@ public class ResponseHandler {
         if (r.get("values") != null){
             List<byte[]> peers = (List<byte[]>) r.get("values");
             findPeerNum.incrementAndGet();
-            if((findPeerNum.get() % 100) == 0){
+            if((findPeerNum.get() % 1000) == 0){
                 log.info("peers count:{}", findPeerNum.get());
             }
             for (byte[] peer : peers) {
@@ -131,7 +131,7 @@ public class ResponseHandler {
         if (r.get("nodes") != null){
             byte[] nodes = (byte[]) r.get("nodes");
             findNodeNum.incrementAndGet();
-            if((findNodeNum.get() % 100) == 0){
+            if((findNodeNum.get() % 1000) == 0){
                 log.info("nodes count:{}", findNodeNum.get());
             }
             for (int i = 0; i < nodes.length; i += 26) {
