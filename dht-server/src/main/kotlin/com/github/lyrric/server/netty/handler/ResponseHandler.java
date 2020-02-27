@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,15 +46,10 @@ public class ResponseHandler {
     private AtomicInteger findNodeNum = new AtomicInteger(0);
 
     private AtomicInteger findPeerNum = new AtomicInteger(0);
-    private AtomicInteger responseNum = new AtomicInteger(0);
 
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
         byte[] id = (byte[]) map.get("t");
-        responseNum.incrementAndGet();
-        if((responseNum.get() % 1000) == 0){
-            log.info("responseNum count:{}", responseNum.get());
-        }
         String transactionId;
         try {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
@@ -100,8 +96,11 @@ public class ResponseHandler {
      */
     private void resolvePeers(Map<String, ?> r, RequestMessage message) {
         if (r.get("values") != null){
-            byte[] peers = (byte[]) r.get("values");
-            findPeerNum.incrementAndGet();
+            List<String> peers = (List<String>) r.get("values");
+            for (String peer : peers) {
+                log.info("peer {}", peer);
+            }
+           /* findPeerNum.incrementAndGet();
             if((findPeerNum.get() % 100) == 0){
                 log.info("peers count:{}", findPeerNum.get());
             }
@@ -122,7 +121,7 @@ public class ResponseHandler {
             if(peers.length >= 6 * 5){
                 redisTemplate.delete(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId());
                 return;
-            }
+            }*/
         }
 
         if (r.get("nodes") != null){
