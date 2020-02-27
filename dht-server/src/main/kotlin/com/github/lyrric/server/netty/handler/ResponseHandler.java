@@ -45,16 +45,23 @@ public class ResponseHandler {
     private AtomicInteger findNodeNum = new AtomicInteger(0);
 
     private AtomicInteger findPeerNum = new AtomicInteger(0);
+    private AtomicInteger responseNum = new AtomicInteger(0);
 
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
         byte[] id = (byte[]) map.get("t");
+        responseNum.incrementAndGet();
+        if((responseNum.get() % 1000) == 0){
+            log.info("responseNum count:{}", responseNum.get());
+        }
         String transactionId;
         try {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
         }catch (Exception e){
+            log.warn(e.getMessage());
             return;
         }
+
         RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
         if(message == null){
             //未知的消息类型，不处理
