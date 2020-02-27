@@ -106,7 +106,8 @@ public class DHTServer {
 		HashMap<String, Object> map = new HashMap<>(5);
 		map.put("info_hash", infoHash);
 		map.put("id", NetworkUtil.SELF_NODE_ID);
-		DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(Integer.parseInt(transactionId)), "q", MethodEnum.GET_PEERS.name, map, address);
+		DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(Integer.parseInt(transactionId)), "q",
+				MethodEnum.GET_PEERS.value, map, address);
 		sendKRPC(packet);
 	}
 

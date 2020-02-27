@@ -59,7 +59,6 @@ public class ResponseHandler {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
         }catch (Exception e){
             log.warn(e.getMessage());
-            log.warn("error id {}", new String(id));
             return;
         }
 
@@ -69,8 +68,8 @@ public class ResponseHandler {
             log.info("未知的消息类型，不处理, transactionId{}",transactionId);
             return;
         }
-        String type = message.getType();
-        log.info("on response type {}", type);
+        String type = message.getType().toLowerCase();
+        //log.info("on response type {}", type);
         @SuppressWarnings("unchecked")
         Map<String, ?> r = (Map<String, ?>) map.get("r");
         switch (type) {
@@ -189,7 +188,7 @@ public class ResponseHandler {
             map.put("id",  NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, target));
         }
         Integer transactionId = MessageIdUtil.generatorIntId();
-        RequestMessage requestMessage = new RequestMessage(transactionId.toString(), MethodEnum.FIND_NODE.name, null);
+        RequestMessage requestMessage = new RequestMessage(transactionId.toString(), MethodEnum.FIND_NODE.value, null);
         redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+requestMessage.getTransactionId(), requestMessage,5, TimeUnit.MINUTES);
         DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(transactionId), "q", "find_node", map, address);
         dhtServer.sendKRPCWithLimit(packet);
