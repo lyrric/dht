@@ -10,6 +10,7 @@ import com.github.lyrric.common.util.NodeIdUtil;
 import com.github.lyrric.server.model.Node;
 import com.github.lyrric.server.model.RequestMessage;
 import com.github.lyrric.server.netty.DHTServer;
+import com.github.lyrric.server.util.RouteTable;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -41,6 +42,8 @@ public class ResponseHandler {
     private DHTServer dhtServer;
     @Resource(name = "dhtRedisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
+    @Resource
+    private RouteTable routeTable;
 
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
@@ -97,8 +100,8 @@ public class ResponseHandler {
             //如果peer达到了五个，就手动删除transaction Id，以后该消息的回复，都不再处理，避免重复下载
             if(peers.length >= 6 * 5){
                 redisTemplate.delete(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId());
+                return;
             }
-            return ;
         }
 
         if (r.get("nodes") != null){
@@ -113,7 +116,6 @@ public class ResponseHandler {
                     log.error(e.getMessage());
                 }
             }
-            return ;
         }
     }
     /**
@@ -132,7 +134,9 @@ public class ResponseHandler {
                 InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (nodes[i + 24] << 8)) | (0x000000FF & nodes[i + 25]));
                 byte[] nid = new byte[20];
                 System.arraycopy(nodes, i, nid, 0, 20);
-                DHTServerHandler.NODES_QUEUE.offer(new Node(nid, address));
+                Node node = new Node(nid, address);
+                DHTServerHandler.NODES_QUEUE.offer(node);
+                routeTable.add(node);
                 //log.info("get node address=[{}] ", address);
             } catch (Exception e) {
                 log.error("", e);

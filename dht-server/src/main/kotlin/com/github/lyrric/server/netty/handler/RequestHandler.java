@@ -7,8 +7,10 @@ import com.github.lyrric.common.util.MessageIdUtil;
 import com.github.lyrric.common.util.NetworkUtil;
 import com.github.lyrric.common.util.NodeIdUtil;
 import com.github.lyrric.server.mapper.InfoHashListMapper;
+import com.github.lyrric.server.model.Node;
 import com.github.lyrric.server.model.RequestMessage;
 import com.github.lyrric.server.netty.DHTServer;
+import com.github.lyrric.server.util.RouteTable;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -19,6 +21,7 @@ import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,7 +50,8 @@ public class RequestHandler {
      * 收到的hash数量
      */
     private AtomicInteger hashCount = new AtomicInteger(0);
-
+    @Resource
+    private RouteTable routeTable;
     /**
      * 解析查询请求
      *
@@ -145,7 +149,7 @@ public class RequestHandler {
         DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
         dhtServer.sendKRPCWithLimit(packet);
 
-        //sendGetPeers(hashStr);
+        sendGetPeers(hashStr);
     }
 
     /**
@@ -156,8 +160,9 @@ public class RequestHandler {
         RequestMessage message = new RequestMessage(MessageIdUtil.generatorIntId().toString(), MethodEnum.GET_PEERS.name(), infoHash);
         //有效期为三分钟
         redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId(), message, 3, TimeUnit.MINUTES);
-        for (InetSocketAddress addr : DHTServer.BOOTSTRAP_NODES) {
-            dhtServer.sendGetPeers(infoHash, addr, message.getTransactionId());
+        List<Node> nodes = routeTable.getAll();
+        for (Node node : nodes) {
+            dhtServer.sendGetPeers(infoHash, node.getAddr(), message.getTransactionId());
 
         }
     }
