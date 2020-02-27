@@ -1,6 +1,7 @@
 package com.github.lyrric.server.util;
 
 import com.github.lyrric.server.model.Node;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -12,6 +13,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 假的
  * @author wangxiaodong
  */
+@Slf4j
 @Component
 public class RouteTable {
 
@@ -37,6 +39,7 @@ public class RouteTable {
             try {
                 if(nodes.size() <= MAX_SIZE){
                     nodes.add(node);
+                    log.info("add node {}", node.getAddr());
                     return;
                 }
                 long time = System.currentTimeMillis()/1000;

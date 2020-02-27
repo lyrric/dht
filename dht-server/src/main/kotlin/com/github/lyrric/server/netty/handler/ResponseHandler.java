@@ -53,6 +53,7 @@ public class ResponseHandler {
         RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
         if(message == null){
             //未知的消息类型，不处理
+            log.info("未知的消息类型，不处理, transactionId{}",transactionId);
             return;
         }
         String type = message.getType();
