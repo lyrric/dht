@@ -90,7 +90,6 @@ public class ResponseHandler {
                 try {
                     InetAddress ip = InetAddress.getByAddress(new byte[]{peers[i], peers[i + 1], peers[i + 2], peers[i + 3]});
                     InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (peers[i + 4] << 8)) | (0x000000FF & peers[i + 5]));
-
                     DownloadMsgInfo downloadMsgInfo =
                             new DownloadMsgInfo(address.getHostName(), address.getPort(), NetworkUtil.SELF_NODE_ID, message.getHashInfo());
                     log.info("resolvePeers peers ,transaction id = {} infoHash={} address=[{}] ", message.getTransactionId(), message.getHashInfo(), address);
@@ -139,7 +138,6 @@ public class ResponseHandler {
                 Node node = new Node(nid, address);
                 DHTServerHandler.NODES_QUEUE.offer(node);
                 routeTable.add(node);
-                //log.info("get node address=[{}] ", address);
             } catch (Exception e) {
                 log.error("", e);
             }
