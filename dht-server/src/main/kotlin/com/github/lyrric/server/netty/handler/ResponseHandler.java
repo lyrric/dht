@@ -48,8 +48,8 @@ public class ResponseHandler {
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
         byte[] id = (byte[]) map.get("t");
-        String transactionId = new String(id);
-        RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(transactionId).get();
+        String transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
+        RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
         if(message == null){
             //未知的消息类型，不处理
             return;
