@@ -70,7 +70,7 @@ public class ResponseHandler {
             return;
         }
         String type = message.getType();
-        //log.info("on response type {}", type);
+        log.info("on response type {}", type);
         @SuppressWarnings("unchecked")
         Map<String, ?> r = (Map<String, ?>) map.get("r");
         switch (type) {
