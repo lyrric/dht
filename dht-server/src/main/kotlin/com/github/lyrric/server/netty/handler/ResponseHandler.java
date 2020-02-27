@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import sun.plugin2.message.Message;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -48,13 +49,19 @@ public class ResponseHandler {
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
         byte[] id = (byte[]) map.get("t");
-        String transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
+        String transactionId;
+        try {
+            transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
+        }catch (Exception e){
+            return;
+        }
         RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
         if(message == null){
             //未知的消息类型，不处理
             return;
         }
         String type = message.getType();
+        log.info("on response type {}", type);
         @SuppressWarnings("unchecked")
         Map<String, ?> r = (Map<String, ?>) map.get("r");
         switch (type) {
@@ -166,8 +173,11 @@ public class ResponseHandler {
         if (nid != null) {
             map.put("id",  NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, target));
         }
-        DatagramPacket packet = NetworkUtil.createPacket("find_node".getBytes(), "q", "find_node", map, address);
-         dhtServer.sendKRPCWithLimit(packet);
+        Integer transactionId = MessageIdUtil.generatorIntId();
+        RequestMessage requestMessage = new RequestMessage(transactionId.toString(), MethodEnum.FIND_NODE.name, null);
+        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+requestMessage.getTransactionId(), requestMessage);
+        DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(transactionId), "q", "find_node", map, address);
+        dhtServer.sendKRPCWithLimit(packet);
     }
     /**
      * 查询 DHT 节点线程，用于持续获取新的 DHT 节点
