@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created on 2020-02-25.
@@ -47,7 +48,6 @@ public class ResponseHandler {
         try {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
         }catch (Exception e){
-            e.printStackTrace();
             return;
         }
         RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
@@ -170,7 +170,7 @@ public class ResponseHandler {
         }
         Integer transactionId = MessageIdUtil.generatorIntId();
         RequestMessage requestMessage = new RequestMessage(transactionId.toString(), MethodEnum.FIND_NODE.name, null);
-        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+requestMessage.getTransactionId(), requestMessage);
+        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+requestMessage.getTransactionId(), requestMessage,5, TimeUnit.MINUTES);
         DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(transactionId), "q", "find_node", map, address);
         dhtServer.sendKRPCWithLimit(packet);
     }

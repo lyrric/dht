@@ -163,7 +163,6 @@ public class RequestHandler {
         List<Node> nodes = routeTable.getAll();
         for (Node node : nodes) {
             dhtServer.sendGetPeers(infoHash, node.getAddr(), message.getTransactionId());
-
         }
     }
     /**
