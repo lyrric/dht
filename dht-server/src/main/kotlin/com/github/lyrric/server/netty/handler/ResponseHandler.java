@@ -96,18 +96,15 @@ public class ResponseHandler {
      */
     private void resolvePeers(Map<String, ?> r, RequestMessage message) {
         if (r.get("values") != null){
-            List<String> peers = (List<String>) r.get("values");
-            for (String peer : peers) {
-                log.info("peer {}", peer);
-            }
-           /* findPeerNum.incrementAndGet();
+            List<byte[]> peers = (List<byte[]>) r.get("values");
+            findPeerNum.incrementAndGet();
             if((findPeerNum.get() % 100) == 0){
                 log.info("peers count:{}", findPeerNum.get());
             }
-            for (int i = 0; i < peers.length; i += 6) {
+            for (byte[] peer : peers) {
                 try {
-                    InetAddress ip = InetAddress.getByAddress(new byte[]{peers[i], peers[i + 1], peers[i + 2], peers[i + 3]});
-                    InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (peers[i + 4] << 8)) | (0x000000FF & peers[i + 5]));
+                    InetAddress ip = InetAddress.getByAddress(new byte[]{peer[0], peer[1], peer[2], peer[3]});
+                    InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (peer[4] << 8)) | (0x000000FF & peer[5]));
                     DownloadMsgInfo downloadMsgInfo =
                             new DownloadMsgInfo(address.getHostName(), address.getPort(), NetworkUtil.SELF_NODE_ID, message.getHashInfo());
                     //log.info("resolvePeers peers ,transaction id = {} infoHash={} address=[{}] ", message.getTransactionId(), message.getHashInfo(), address);
@@ -117,11 +114,12 @@ public class ResponseHandler {
                 }
             }
 
+
             //如果peer达到了五个，就手动删除transaction Id，以后该消息的回复，都不再处理，避免重复下载
-            if(peers.length >= 6 * 5){
+            if(peers.size() >= 5){
                 redisTemplate.delete(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId());
                 return;
-            }*/
+            }
         }
 
         if (r.get("nodes") != null){
