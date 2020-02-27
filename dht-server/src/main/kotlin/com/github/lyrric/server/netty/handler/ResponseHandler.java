@@ -75,20 +75,14 @@ public class ResponseHandler {
         switch (type) {
             case "find_node":
                 resolveNodes(r);
-                findNodeNum.incrementAndGet();
-                if((findNodeNum.get() % 100) == 0){
-                    log.info("findNodeNum count:{}", findNodeNum.get());
-                }
+
                 break;
             case "ping":
 
                 break;
             case "get_peers":
                 resolvePeers(r, message);
-                findPeerNum.incrementAndGet();
-                if((findPeerNum.get() % 100) == 0){
-                    log.info("findPeerNum count:{}", findPeerNum.get());
-                }
+
                 break;
             case "announce_peer":
 
@@ -106,19 +100,24 @@ public class ResponseHandler {
      */
     private void resolvePeers(Map<String, ?> r, RequestMessage message) {
         if (r.get("values") != null){
-            byte[] peers = (byte[]) r.get("nodes");
+            byte[] peers = (byte[]) r.get("values");
+            findPeerNum.incrementAndGet();
+            if((findPeerNum.get() % 100) == 0){
+                log.info("peers count:{}", findPeerNum.get());
+            }
             for (int i = 0; i < peers.length; i += 6) {
                 try {
                     InetAddress ip = InetAddress.getByAddress(new byte[]{peers[i], peers[i + 1], peers[i + 2], peers[i + 3]});
                     InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (peers[i + 4] << 8)) | (0x000000FF & peers[i + 5]));
                     DownloadMsgInfo downloadMsgInfo =
                             new DownloadMsgInfo(address.getHostName(), address.getPort(), NetworkUtil.SELF_NODE_ID, message.getHashInfo());
-                    log.info("resolvePeers peers ,transaction id = {} infoHash={} address=[{}] ", message.getTransactionId(), message.getHashInfo(), address);
+                    //log.info("resolvePeers peers ,transaction id = {} infoHash={} address=[{}] ", message.getTransactionId(), message.getHashInfo(), address);
                     redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).leftPush(downloadMsgInfo);
                 } catch (Exception e) {
                     log.error(e.getMessage());
                 }
             }
+
             //如果peer达到了五个，就手动删除transaction Id，以后该消息的回复，都不再处理，避免重复下载
             if(peers.length >= 6 * 5){
                 redisTemplate.delete(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId());
@@ -128,12 +127,17 @@ public class ResponseHandler {
 
         if (r.get("nodes") != null){
             byte[] nodes = (byte[]) r.get("nodes");
+            findNodeNum.incrementAndGet();
+            if((findNodeNum.get() % 100) == 0){
+                log.info("nodes count:{}", findNodeNum.get());
+            }
             for (int i = 0; i < nodes.length; i += 26) {
                 try {
                     InetAddress ip = InetAddress.getByAddress(new byte[]{nodes[i + 20], nodes[i + 21], nodes[i + 22], nodes[i + 23]});
                     InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (nodes[i + 24] << 8)) | (0x000000FF & nodes[i + 25]));
-                    log.info("resolvePeers nodes ,transaction id = {} infoHash={} address=[{}] ", message.getTransactionId(), message.getHashInfo(), address);
+                    //log.info("resolvePeers nodes ,transaction id = {} infoHash={} address=[{}] ", message.getTransactionId(), message.getHashInfo(), address);
                     dhtServer.sendGetPeers(message.getHashInfo(), address, message.getTransactionId());
+
                 } catch (Exception e) {
                     log.error(e.getMessage());
                 }
