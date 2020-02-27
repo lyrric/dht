@@ -47,9 +47,13 @@ public class ResponseHandler {
 
     private AtomicInteger findPeerNum = new AtomicInteger(0);
 
+    private AtomicInteger missMessage = new AtomicInteger(0);
+
+
+
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
-        byte[] id = (byte[]) map.get("t");
+         byte[] id = (byte[]) map.get("t");
         String transactionId;
         try {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
@@ -61,7 +65,11 @@ public class ResponseHandler {
         RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
         if(message == null){
             //未知的消息类型，不处理
-            log.info("未知的消息类型，不处理, transactionId{}",transactionId);
+            missMessage.incrementAndGet();
+            if((missMessage.get() % 1000) == 0){
+                log.info("miss message count:{}", missMessage.get());
+            }
+            //log.info("未知的消息类型，不处理, transactionId {}",transactionId);
             return;
         }
         String type = message.getType().toLowerCase();
