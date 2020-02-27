@@ -145,7 +145,7 @@ public class RequestHandler {
         DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
         dhtServer.sendKRPCWithLimit(packet);
 
-        //sendGetPeers(hashStr);
+        sendGetPeers(hashStr);
     }
 
     /**
