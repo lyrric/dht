@@ -70,7 +70,6 @@ public class ByteUtil {
 				(byte) (value >>> 8),
 				(byte) value};
 	}
-
 	/**
 	 * byte[] 转 int
 	 * @param bRefArr	待转换 byte[]

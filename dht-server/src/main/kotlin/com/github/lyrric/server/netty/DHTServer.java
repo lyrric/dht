@@ -2,10 +2,8 @@ package com.github.lyrric.server.netty;
 
 
 import com.github.lyrric.common.constant.MethodEnum;
-import com.github.lyrric.common.constant.RedisConstant;
-import com.github.lyrric.common.util.MessageIdUtil;
+import com.github.lyrric.common.util.ByteUtil;
 import com.github.lyrric.common.util.NetworkUtil;
-import com.github.lyrric.server.model.RequestMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.socket.DatagramPacket;
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /***
  * 模拟 DHT 节点服务器
@@ -109,7 +106,7 @@ public class DHTServer {
 		HashMap<String, Object> map = new HashMap<>(5);
 		map.put("info_hash",infoHash);
 		map.put("id", NetworkUtil.SELF_NODE_ID);
-		DatagramPacket packet = NetworkUtil.createPacket(transactionId.getBytes(), "q", MethodEnum.GET_PEERS.name, map, address);
+		DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(Integer.parseInt(transactionId)), "q", MethodEnum.GET_PEERS.name, map, address);
 		sendKRPC(packet);
 	}
 

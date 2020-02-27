@@ -153,7 +153,7 @@ public class RequestHandler {
      * @param infoHash 磁力hash
      */
     private void sendGetPeers(String infoHash){
-        RequestMessage message = new RequestMessage(MessageIdUtil.generateMessageID(), MethodEnum.GET_PEERS.name(), infoHash);
+        RequestMessage message = new RequestMessage(MessageIdUtil.generatorIntId().toString(), MethodEnum.GET_PEERS.name(), infoHash);
         //有效期为三分钟
         redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId(), message, 3, TimeUnit.MINUTES);
         for (InetSocketAddress addr : DHTServer.BOOTSTRAP_NODES) {
