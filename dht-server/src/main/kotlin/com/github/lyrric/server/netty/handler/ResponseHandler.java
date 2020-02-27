@@ -46,7 +46,6 @@ public class ResponseHandler {
         String transactionId;
         try {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
-            log.info("on response transactionId {}", transactionId);
         }catch (Exception e){
             e.printStackTrace();
             return;
@@ -57,7 +56,7 @@ public class ResponseHandler {
             return;
         }
         String type = message.getType();
-        log.info("on response type {}", type);
+        //log.info("on response type {}", type);
         @SuppressWarnings("unchecked")
         Map<String, ?> r = (Map<String, ?>) map.get("r");
         switch (type) {
