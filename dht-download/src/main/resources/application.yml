@@ -32,6 +32,6 @@ logging:
 
 download:
   num:
-    thread: 500
+    thread: 200
 server:
   port: 8767
