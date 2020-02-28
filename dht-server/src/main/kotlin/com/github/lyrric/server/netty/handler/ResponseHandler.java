@@ -120,6 +120,7 @@ public class ResponseHandler {
                     log.error(e.getMessage());
                 }
             }
+            return;
             //如果peer达到了五个，就手动删除transaction Id，以后该消息的回复，都不再处理，避免重复下载
             //发现由于不明原因，获取到的peer总是无效，可能是由于墙、或者peer时效性原因，所以这里干脆多获取几个peer
 //            if(peers.size() >= 5){
