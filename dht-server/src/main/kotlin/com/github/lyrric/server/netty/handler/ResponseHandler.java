@@ -67,14 +67,12 @@ public class ResponseHandler {
         switch (type) {
             case "find_node":
                 resolveNodes(r);
-
                 break;
             case "ping":
 
                 break;
             case "get_peers":
                 resolvePeers(r, message);
-
                 break;
             case "announce_peer":
 
@@ -102,7 +100,6 @@ public class ResponseHandler {
             if(peersCount > 20){
                 redisTemplate.delete(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId());
                 redisTemplate.delete(RedisConstant.KEY_HASH_PEERS_COUNT+message.getTransactionId());
-                return;
             }else{
                 redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PEERS_COUNT+message.getTransactionId(), peersCount,30, TimeUnit.MINUTES);
             }
