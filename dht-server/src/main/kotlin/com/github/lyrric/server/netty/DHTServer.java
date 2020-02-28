@@ -100,7 +100,7 @@ public class DHTServer {
 		map.put("id", NetworkUtil.SELF_NODE_ID);
 		DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(Integer.parseInt(transactionId)), "q",
 				MethodEnum.GET_PEERS.value, map, address);
-		sendKRPC(packet);
+		sendKRPCWithLimit(packet);
 	}
 
 	private void sendKRPC(DatagramPacket packet){
