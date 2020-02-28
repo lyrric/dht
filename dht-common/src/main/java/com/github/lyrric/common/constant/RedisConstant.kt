@@ -19,5 +19,9 @@ class RedisConstant {
          * 存储消息的prefix
          */
         const val KEY_MESSAGE_PREFIX:String = "DHT:MESSAGE:"
+        /**
+         * peers count
+         */
+        const val KEY_HASH_PEERS_COUNT:String = "DHT:HASH:PEERS:"
     }
 }

@@ -72,7 +72,6 @@ public class ResponseHandler {
             return;
         }
         String type = message.getType().toLowerCase();
-        //log.info("on response type {}", type);
         @SuppressWarnings("unchecked")
         Map<String, ?> r = (Map<String, ?>) map.get("r");
         switch (type) {
@@ -102,8 +101,21 @@ public class ResponseHandler {
      * @param r
      */
     private void resolvePeers(Map<String, ?> r, RequestMessage message) {
+        Integer peersCount = (Integer) redisTemplate.opsForValue().get(RedisConstant.KEY_HASH_PEERS_COUNT+message.getTransactionId());
+        peersCount = peersCount==null?0:peersCount;
+
         if (r.get("values") != null){
             List<byte[]> peers = (List<byte[]>) r.get("values");
+            peersCount+=peers.size();
+            //如果peer达到了20个，就手动删除transaction Id，以后该消息的回复，都不再处理，避免重复下载
+            //发现由于不明原因，获取到的peer总是无效，可能是由于墙、或者peer时效性原因
+            if(peersCount > 20){
+                redisTemplate.delete(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId());
+                redisTemplate.delete(RedisConstant.KEY_HASH_PEERS_COUNT+message.getTransactionId());
+                return;
+            }else{
+                redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PEERS_COUNT+message.getTransactionId(), peersCount,30, TimeUnit.MINUTES);
+            }
             findPeerNum.incrementAndGet();
             if((findPeerNum.get() % 1000) == 0){
                 log.info("peers count:{}", findPeerNum.get());
@@ -114,19 +126,12 @@ public class ResponseHandler {
                     InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (peer[4] << 8)) | (0x000000FF & peer[5]));
                     DownloadMsgInfo downloadMsgInfo =
                             new DownloadMsgInfo(address.getHostName(), address.getPort(), NetworkUtil.SELF_NODE_ID, message.getHashInfo());
-                    //log.info("resolvePeers peers ,transaction id = {} infoHash={} address=[{}] ", message.getTransactionId(), message.getHashInfo(), address);
                     redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).leftPush(downloadMsgInfo);
                 } catch (Exception e) {
                     log.error(e.getMessage());
                 }
             }
-            return;
-            //如果peer达到了五个，就手动删除transaction Id，以后该消息的回复，都不再处理，避免重复下载
-            //发现由于不明原因，获取到的peer总是无效，可能是由于墙、或者peer时效性原因，所以这里干脆多获取几个peer
-//            if(peers.size() >= 5){
-//                redisTemplate.delete(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId());
-//                return;
-//            }
+
         }
 
         if (r.get("nodes") != null){
@@ -139,7 +144,6 @@ public class ResponseHandler {
                 try {
                     InetAddress ip = InetAddress.getByAddress(new byte[]{nodes[i + 20], nodes[i + 21], nodes[i + 22], nodes[i + 23]});
                     InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (nodes[i + 24] << 8)) | (0x000000FF & nodes[i + 25]));
-                    //log.info("resolvePeers nodes ,transaction id = {} infoHash={} address=[{}] ", message.getTransactionId(), message.getHashInfo(), address);
                     dhtServer.sendGetPeers(message.getHashInfo(), address, message.getTransactionId());
 
                 } catch (Exception e) {
