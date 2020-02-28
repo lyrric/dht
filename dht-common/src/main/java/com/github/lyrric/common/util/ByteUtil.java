@@ -81,7 +81,7 @@ public class ByteUtil {
              DataInputStream dintput = new DataInputStream(bintput)) {
 			r = dintput.readInt();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return r;
 	}
