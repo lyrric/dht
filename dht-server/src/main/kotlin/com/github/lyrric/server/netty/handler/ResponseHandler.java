@@ -58,7 +58,6 @@ public class ResponseHandler {
         try {
             transactionId = String.valueOf(ByteUtil.byteArrayToInt(id));
         }catch (Exception e){
-            log.warn(e.getMessage());
             return;
         }
 
@@ -131,7 +130,7 @@ public class ResponseHandler {
         if (r.get("nodes") != null){
             byte[] nodes = (byte[]) r.get("nodes");
             findNodeNum.incrementAndGet();
-            if((findNodeNum.get() % 1000) == 0){
+            if((findNodeNum.get() % 10000) == 0){
                 log.info("nodes count:{}", findNodeNum.get());
             }
             for (int i = 0; i < nodes.length; i += 26) {
