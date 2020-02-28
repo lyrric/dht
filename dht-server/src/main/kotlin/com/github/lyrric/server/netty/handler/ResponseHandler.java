@@ -43,13 +43,7 @@ public class ResponseHandler {
     @Resource
     private RouteTable routeTable;
 
-    private AtomicInteger findNodeNum = new AtomicInteger(0);
-
     private AtomicInteger findPeerNum = new AtomicInteger(0);
-
-    private AtomicInteger missMessage = new AtomicInteger(0);
-
-
 
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
@@ -64,10 +58,6 @@ public class ResponseHandler {
         RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
         if(message == null){
             //未知的消息类型，不处理
-            missMessage.incrementAndGet();
-            if((missMessage.get() % 1000) == 0){
-                log.info("miss message count:{}", missMessage.get());
-            }
             //log.info("未知的消息类型，不处理, transactionId {}",transactionId);
             return;
         }
@@ -136,10 +126,6 @@ public class ResponseHandler {
 
         if (r.get("nodes") != null){
             byte[] nodes = (byte[]) r.get("nodes");
-            findNodeNum.incrementAndGet();
-            if((findNodeNum.get() % 10000) == 0){
-                log.info("nodes count:{}", findNodeNum.get());
-            }
             for (int i = 0; i < nodes.length; i += 26) {
                 try {
                     InetAddress ip = InetAddress.getByAddress(new byte[]{nodes[i + 20], nodes[i + 21], nodes[i + 22], nodes[i + 23]});
