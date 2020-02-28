@@ -68,31 +68,31 @@ public class RequestHandler {
         switch (q) {
             case "ping":
                 responsePing(t, (byte[]) a.get("id"), sender);
-//                pingNum.incrementAndGet();
-//                if((pingNum.get() % 1000) == 0){
-//                    log.info("pingNum count:{}", pingNum.get());
-//                }
+                pingNum.incrementAndGet();
+                if((pingNum.get() % 1000) == 0){
+                    log.info("pingNum count:{}", pingNum.get());
+                }
                 break;
             case "find_node":
                 responseFindNode(t, (byte[]) a.get("id"), sender);
-//                findNodeNum.incrementAndGet();
-//                if((findNodeNum.get() % 10000) == 0){
-//                    log.info("findNodeNum count:{}", findNodeNum.get());
-//                }
+                findNodeNum.incrementAndGet();
+                if((findNodeNum.get() % 10000) == 0){
+                    log.info("findNodeNum count:{}", findNodeNum.get());
+                }
                 break;
             case "get_peers":
                 responseGetPeers(t, (byte[]) a.get("info_hash"), sender);
-//                findPeerNum.incrementAndGet();
-//                if((findPeerNum.get() % 10000) == 0){
-//                    log.info("findPeerNum count:{}", findPeerNum.get());
-//                }
+                findPeerNum.incrementAndGet();
+                if((findPeerNum.get() % 10000) == 0){
+                    log.info("findPeerNum count:{}", findPeerNum.get());
+                }
                 break;
             case "announce_peer":
                 responseAnnouncePeer(t, a, sender);
-//                announceNum.incrementAndGet();
-//                if((announceNum.get() % 1000) == 0){
-//                    log.info("announceNum count:{}", announceNum.get());
-//                }
+                announceNum.incrementAndGet();
+                if((announceNum.get() % 1000) == 0){
+                    log.info("announceNum count:{}", announceNum.get());
+                }
                 break;
             default:
         }
