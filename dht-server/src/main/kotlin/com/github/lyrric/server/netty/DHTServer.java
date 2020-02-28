@@ -88,6 +88,10 @@ public class DHTServer {
  		sendKRPC(packet);
 	}
 
+	public void  sendKRPCWithOutLimit(DatagramPacket packet) {
+		count();
+		sendKRPC(packet);
+	}
 
 	/**
 	 * 发送get_peers，不限制发送频率
@@ -131,7 +135,7 @@ public class DHTServer {
 			}
 			secondSend++;
 		}else{
-			if((time % 10) == 0 && secondSend != 0){
+			if((time % 60) == 0 && secondSend != 0){
 				log.info("本秒共发送:{} 次请求", secondSend);
 			}
 			secondSend = 0;
