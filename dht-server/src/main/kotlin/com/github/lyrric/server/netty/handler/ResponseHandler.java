@@ -54,7 +54,6 @@ public class ResponseHandler {
         }catch (Exception e){
             return;
         }
-
         RequestMessage message = (RequestMessage) redisTemplate.boundValueOps(RedisConstant.KEY_MESSAGE_PREFIX+transactionId).get();
         if(message == null){
             //未知的消息类型，不处理
@@ -69,13 +68,11 @@ public class ResponseHandler {
                 resolveNodes(r);
                 break;
             case "ping":
-
                 break;
             case "get_peers":
                 resolvePeers(r, message);
                 break;
             case "announce_peer":
-
                 break;
             default:
         }
@@ -103,16 +100,16 @@ public class ResponseHandler {
             }else{
                 redisTemplate.opsForValue().set(RedisConstant.KEY_HASH_PEERS_COUNT+message.getTransactionId(), peersCount,30, TimeUnit.MINUTES);
             }
-            findPeerNum.incrementAndGet();
-            if((findPeerNum.get() % 1000) == 0){
-                log.info("peers count:{}", findPeerNum.get());
-            }
             for (byte[] peer : peers) {
                 try {
                     InetAddress ip = InetAddress.getByAddress(new byte[]{peer[0], peer[1], peer[2], peer[3]});
                     InetSocketAddress address = new InetSocketAddress(ip, (0x0000FF00 & (peer[4] << 8)) | (0x000000FF & peer[5]));
                     DownloadMsgInfo downloadMsgInfo =
                             new DownloadMsgInfo(address.getHostName(), address.getPort(), NetworkUtil.SELF_NODE_ID, message.getHashInfo());
+                    findPeerNum.incrementAndGet();
+                    if((findPeerNum.get() % 1000) == 0){
+                        log.info("peers hash info count:{}", findPeerNum.get());
+                    }
                     redisTemplate.boundListOps(RedisConstant.KEY_HASH_INFO).leftPush(downloadMsgInfo);
                 } catch (Exception e) {
                     log.error(e.getMessage());
