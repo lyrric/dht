@@ -208,15 +208,15 @@ public class RequestHandler {
                 port = ((BigInteger) a.get("port")).intValue();
             }
 
-            //HashMap<String, Object> r = new HashMap<>();
+            HashMap<String, Object> r = new HashMap<>();
             byte[] nodeId = NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, id);
-            //r.put("id", nodeId);
-            //DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
+            r.put("id", nodeId);
+            DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
 
             //保存到下载队列
             redisTemplate.opsForList().rightPush(RedisConstant.KEY_HASH_INFO, new DownloadMsgInfo(sender.getHostString(), port, nodeId, infoHash));
             //回复消息
-            //dhtServer.sendKRPCWithLimit(packet);
+            dhtServer.sendKRPCWithLimit(packet);
 
             hashCount.incrementAndGet();
             if(hashCount.get() % 1000 == 0){
