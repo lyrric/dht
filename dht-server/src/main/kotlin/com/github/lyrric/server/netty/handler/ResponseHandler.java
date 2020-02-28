@@ -157,6 +157,9 @@ public class ResponseHandler {
         if (nodes == null){
             return ;
         }
+        if(DHTServerHandler.NODES_QUEUE.size() > 5000){
+            return;
+        }
         for (int i = 0; i < nodes.length; i += 26) {
             try {
                 InetAddress ip = InetAddress.getByAddress(new byte[]{nodes[i + 20], nodes[i + 21], nodes[i + 22], nodes[i + 23]});
