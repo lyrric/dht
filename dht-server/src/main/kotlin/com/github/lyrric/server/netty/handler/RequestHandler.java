@@ -168,7 +168,6 @@ public class RequestHandler {
     /**
      * 回复 announce_peer 请求，该请求中包含了对方正在下载的 torrent 的 info_hash 以及 端口号
      * Response = {"t":"aa", "y":"r", "r": {"id":"mnopqrstuvwxyz123456"}}
-     *
      * @param t
      * @param a      请求参数 a：
      *               {
