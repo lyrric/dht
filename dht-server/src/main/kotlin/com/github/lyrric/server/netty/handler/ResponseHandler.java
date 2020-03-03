@@ -40,16 +40,18 @@ public class ResponseHandler {
     private DHTServer dhtServer;
     @Resource(name = "dhtRedisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
-    @Resource
-    private RouteTable routeTable;
 
-    private AtomicInteger findPeerNum = new AtomicInteger(0);
+    private AtomicInteger response = new AtomicInteger(0);
 
     public void hand(Map<String, ?> map, InetSocketAddress sender){
         //消息 id
          byte[] id = (byte[]) map.get("t");
         @SuppressWarnings("unchecked")
         Map<String, ?> r = (Map<String, ?>) map.get("r");
+        response.incrementAndGet();
+        if((response.get() % 10000) == 0){
+            log.info("on response count:{}", response.get());
+        }
         resolveNodes(r);
     }
 

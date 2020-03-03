@@ -82,18 +82,19 @@ public class DHTServer {
 	 * @param packet
 	 */
 	public void  sendKRPCWithLimit(DatagramPacket packet) {
-		if(count()){
+		if(limit()){
 			return;
 		}
  		sendKRPC(packet);
 	}
 
 	public void  sendKRPCWithOutLimit(DatagramPacket packet) {
-		count();
+		limit();
 		sendKRPC(packet);
 	}
 
 	private void sendKRPC(DatagramPacket packet){
+		secondSend++;
 		if(serverChannelFuture.channel().isWritable()){
 			serverChannelFuture.channel().writeAndFlush(packet).addListener(future -> {
 				if (!future.isSuccess()) {
@@ -113,13 +114,12 @@ public class DHTServer {
 	 * 计数
 	 * @return
 	 */
-	private boolean count(){
+	private boolean limit(){
 		long time = System.currentTimeMillis()/1000;
 		if(time == now){
 			if(secondSend >= sendLimit){
 				return true;
 			}
-			secondSend++;
 		}else{
 			if((time % 60) == 0 && secondSend != 0){
 				log.info("本秒共发送:{} 次请求", secondSend);

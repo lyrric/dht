@@ -70,14 +70,14 @@ public class RequestHandler {
             case "ping":
                 responsePing(t, (byte[]) a.get("id"), sender);
                 pingNum.incrementAndGet();
-                if((pingNum.get() % 1000) == 0){
+                if((pingNum.get() % 10000) == 0){
                     log.info("on request ping count:{}", pingNum.get());
                 }
                 break;
             case "find_node":
                 responseFindNode(t, (byte[]) a.get("id"), sender);
                 findNodeNum.incrementAndGet();
-                if((findNodeNum.get() % 1000) == 0){
+                if((findNodeNum.get() % 10000) == 0){
                     log.info("on request find node count:{}", findNodeNum.get());
                 }
                 break;
@@ -91,7 +91,7 @@ public class RequestHandler {
             case "announce_peer":
                 responseAnnouncePeer(t, a, sender);
                 announceNum.incrementAndGet();
-                if((announceNum.get() % 10000) == 0){
+                if((announceNum.get() % 1000) == 0){
                     log.info("on request announce count:{}", announceNum.get());
                 }
                 break;
