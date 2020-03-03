@@ -1,6 +1,8 @@
 package com.github.lyrric.server
 
+import com.github.lyrric.common.util.ByteUtil
 import com.github.lyrric.common.util.MessageIdUtil
+import com.github.lyrric.common.util.NetworkUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -35,5 +37,6 @@ class DhtServerApplication{
 }
 
 fun main(args: Array<String>) {
+    println(ByteUtil.byteArrayToHex(NetworkUtil.SELF_NODE_ID))
     runApplication<DhtServerApplication>(*args)
 }

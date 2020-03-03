@@ -20,8 +20,8 @@ class RedisConstant {
          */
         const val KEY_MESSAGE_PREFIX:String = "DHT:MESSAGE:"
         /**
-         * peers count
+         * ip nodes,存储已经发送过find_node请求的ip
          */
-        const val KEY_HASH_PEERS_COUNT:String = "DHT:HASH:PEERS:"
+        const val KEY_NODE_IP:String = "DHT:NODE:IP:"
     }
 }

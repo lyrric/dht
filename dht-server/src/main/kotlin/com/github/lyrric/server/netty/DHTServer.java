@@ -93,20 +93,6 @@ public class DHTServer {
 		sendKRPC(packet);
 	}
 
-	/**
-	 * 发送get_peers，不限制发送频率
-	 * @param infoHash
-	 */
-	public void sendGetPeers(byte[] infoHash, InetSocketAddress address, String transactionId) {
-		count();
-		HashMap<String, Object> map = new HashMap<>(5);
-		map.put("info_hash", infoHash);
-		map.put("id", NetworkUtil.SELF_NODE_ID);
-		DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(Integer.parseInt(transactionId)), "q",
-				MethodEnum.GET_PEERS.value, map, address);
-		sendKRPCWithLimit(packet);
-	}
-
 	private void sendKRPC(DatagramPacket packet){
 		if(serverChannelFuture.channel().isWritable()){
 			serverChannelFuture.channel().writeAndFlush(packet).addListener(future -> {

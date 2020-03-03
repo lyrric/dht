@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +65,7 @@ public class RequestHandler {
 
         String q = new String((byte[]) map.get("q"));
         Map<String, ?> a = (Map<String, ?>) map.get("a");
-        //log.info("onQuery type:{}", q);
+        saveNode(a, sender);
         switch (q) {
             case "ping":
                 responsePing(t, (byte[]) a.get("id"), sender);
@@ -76,7 +77,7 @@ public class RequestHandler {
             case "find_node":
                 responseFindNode(t, (byte[]) a.get("id"), sender);
                 findNodeNum.incrementAndGet();
-                if((findNodeNum.get() % 10000) == 0){
+                if((findNodeNum.get() % 1000) == 0){
                     log.info("on request find node count:{}", findNodeNum.get());
                 }
                 break;
@@ -84,13 +85,13 @@ public class RequestHandler {
                 responseGetPeers(t, (byte[]) a.get("info_hash"), sender);
                 findPeerNum.incrementAndGet();
                 if((findPeerNum.get() % 10000) == 0){
-                    log.info("on request find peer count:{}", findPeerNum.get());
+                    log.info("on request get peer count:{}", findPeerNum.get());
                 }
                 break;
             case "announce_peer":
                 responseAnnouncePeer(t, a, sender);
                 announceNum.incrementAndGet();
-                if((announceNum.get() % 1000) == 0){
+                if((announceNum.get() % 10000) == 0){
                     log.info("on request announce count:{}", announceNum.get());
                 }
                 break;
@@ -98,6 +99,17 @@ public class RequestHandler {
         }
     }
 
+    private void saveNode(Map<String, ?> a, InetSocketAddress sender){
+        if(DHTServerHandler.NODES_QUEUE.size() > 50000){
+            return;
+        }
+        Boolean success;
+        if((success = redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_NODE_IP, sender.getHostName(),3, TimeUnit.HOURS)) != null && success){
+            byte[] nid = (byte[]) a.get("id");
+            Node node = new Node(nid, sender);
+            DHTServerHandler.NODES_QUEUE.offer(node);
+        }
+    }
     /**
      * 回复 ping 请求
      * Response = {"t":"aa", "y":"r", "r": {"id":"自身节点ID"}}
@@ -109,7 +121,7 @@ public class RequestHandler {
         Map r = new HashMap<String, Object>();
         r.put("id", NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, nid));
         DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
-        dhtServer.sendKRPCWithLimit(packet);
+        dhtServer.sendKRPCWithOutLimit(packet);
     }
 
     /**
@@ -147,24 +159,11 @@ public class RequestHandler {
         r.put("nodes", new byte[]{});
         r.put("id", NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, info_hash));
         DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
-        dhtServer.sendKRPCWithLimit(packet);
+        dhtServer.sendKRPCWithOutLimit(packet);
 
-        sendGetPeers(info_hash);
     }
 
-    /**
-     * 送get_peers请求，请求种子peers
-     * @param infoHash 磁力hash
-     */
-    private void sendGetPeers(byte[] infoHash){
-        RequestMessage message = new RequestMessage(MessageIdUtil.generatorIntId().toString(), MethodEnum.GET_PEERS.name(), infoHash);
-        //有效期为三分钟
-        redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_MESSAGE_PREFIX+message.getTransactionId(), message, 30, TimeUnit.MINUTES);
-        List<Node> nodes = routeTable.getAll();
-        for (Node node : nodes) {
-            dhtServer.sendGetPeers(infoHash, node.getAddr(), message.getTransactionId());
-        }
-    }
+
     /**
      * 回复 announce_peer 请求，该请求中包含了对方正在下载的 torrent 的 info_hash 以及 端口号
      * Response = {"t":"aa", "y":"r", "r": {"id":"mnopqrstuvwxyz123456"}}
@@ -197,9 +196,9 @@ public class RequestHandler {
                 }
             }
             byte[] id = (byte[]) a.get("id");
-            if(token.length != 2 || infoHash[0] != token[0] || infoHash[1] != token[1]) {
-                return;
-            }
+//            if(token.length != 2 || infoHash[0] != token[0] || infoHash[1] != token[1]) {
+//                return;
+//            }
             int port;
             if (a.containsKey("implied_port") && ((BigInteger) a.get("implied_port")).shortValue() != 0) {
                 port = sender.getPort();
