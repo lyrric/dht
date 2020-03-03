@@ -68,7 +68,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 				if (map == null || map.get("y") == null) {
 					return;
 				}
-				routeTable.add(new Node(new byte[0], packet.sender()));
 				String y = new String((byte[]) map.get("y"));
 				if ("q".equals(y)) {
 					//请求 Queries
