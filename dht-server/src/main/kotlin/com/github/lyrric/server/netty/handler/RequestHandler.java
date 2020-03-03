@@ -104,7 +104,7 @@ public class RequestHandler {
             return;
         }
         Boolean success;
-        if((success = redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_NODE_IP, sender.getHostName(),3, TimeUnit.HOURS)) != null && success){
+        if((success = redisTemplate.opsForValue().setIfAbsent(RedisConstant.KEY_NODE_IP+sender.getHostName(), System.currentTimeMillis(),3, TimeUnit.HOURS)) != null && success){
             byte[] nid = (byte[]) a.get("id");
             Node node = new Node(nid, sender);
             DHTServerHandler.NODES_QUEUE.offer(node);

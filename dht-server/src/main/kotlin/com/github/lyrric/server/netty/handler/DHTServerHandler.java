@@ -50,8 +50,6 @@ public class DHTServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 	private RequestHandler requestHandler;
 	@Resource
 	private ResponseHandler responseHandler;
-	@Resource
-	private RouteTable routeTable;
 
 	private ExecutorService pool = Executors.newFixedThreadPool(50);
 
