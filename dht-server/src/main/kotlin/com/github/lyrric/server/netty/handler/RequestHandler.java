@@ -133,7 +133,7 @@ public class RequestHandler {
      */
     private void responseFindNode(byte[] t, byte[] nid, InetSocketAddress sender) {
         HashMap<String, Object> r = new HashMap<>();
-        r.put("id", NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, nid));
+        r.put("id", NodeIdUtil.makeSelfId(NetworkUtil.SELF_NODE_ID, nid));
         r.put("nodes", new byte[]{});
         DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
         dhtServer.sendKRPCWithLimit(packet);
@@ -157,7 +157,7 @@ public class RequestHandler {
         HashMap<String, Object> r = new HashMap<>();
         r.put("token", new byte[]{info_hash[0], info_hash[1]});
         r.put("nodes", new byte[]{});
-        r.put("id", NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, info_hash));
+        r.put("id", NodeIdUtil.makeSelfId(NetworkUtil.SELF_NODE_ID, info_hash));
         DatagramPacket packet = NetworkUtil.createPacket(t, "r", null, r, sender);
         dhtServer.sendKRPCWithOutLimit(packet);
 

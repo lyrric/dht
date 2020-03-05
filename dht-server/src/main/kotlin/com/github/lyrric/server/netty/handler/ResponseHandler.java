@@ -102,7 +102,7 @@ public class ResponseHandler {
         HashMap<String, Object> map = new HashMap<>();
         map.put("target", target);
         if (nid != null) {
-            map.put("id",  NodeIdUtil.getNeighbor(NetworkUtil.SELF_NODE_ID, target));
+            map.put("id",  NodeIdUtil.makeSelfId(NetworkUtil.SELF_NODE_ID, target));
         }
         DatagramPacket packet = NetworkUtil.createPacket(ByteUtil.intToByteArray(MessageIdUtil.generatorIntId()), "q", "find_node", map, address);
         dhtServer.sendKRPCWithLimit(packet);
