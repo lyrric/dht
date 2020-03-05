@@ -49,7 +49,7 @@ public class ResponseHandler {
         @SuppressWarnings("unchecked")
         Map<String, ?> r = (Map<String, ?>) map.get("r");
         response.incrementAndGet();
-        if((response.get() % 10000) == 0){
+        if((response.get() % 100000) == 0){
             log.info("on response count:{}", response.get());
         }
         resolveNodes(r);
