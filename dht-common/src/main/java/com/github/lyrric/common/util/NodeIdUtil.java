@@ -94,9 +94,9 @@ public class NodeIdUtil {
 		long crc = crc32C.getValue();
 
 		byte[] node_id = new byte[20];
-		node_id[0] = (byte)((crc >> 24) & 0xff);
-		node_id[1] = (byte)((crc >> 16) & 0xff);
-		node_id[2] = (byte)(((crc >> 8) & 0xf8) | (rand & 0x7));
+		node_id[0] = (byte)(new Random().nextInt(256));
+		node_id[1] = (byte)(new Random().nextInt(256));
+		node_id[2] = (byte)(new Random().nextInt(256));
 		for (int i = 3; i < 19; ++i)
 			node_id[i] = (byte)random.nextInt(256);
 		node_id[19] = (byte)rand;
